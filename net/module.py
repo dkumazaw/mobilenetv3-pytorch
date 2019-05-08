@@ -49,6 +49,8 @@ class Block(nn.Module):
         else:
             raise ValueError('Non-linearity must be either HS or RE.')
 
+        self._will_skipconnect = stride == 1 and in_dim == out_dim
+
         if se:
             self._layers = nn.Sequential(
                 # 1x1 w/o activation
@@ -82,4 +84,8 @@ class Block(nn.Module):
             )
 
     def forward(self, x):
-        return self._layers(x)
+        out = self._layers(x)
+        if self._will_skipconnect:
+            return out + x
+        else:
+            return out
