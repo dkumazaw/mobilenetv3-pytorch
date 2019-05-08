@@ -100,10 +100,10 @@ class MobileNetV3Small(nn.Module):
                                ['bneck',  5,   40, 240,  40,  True, 'HS', 1],
                                ['bneck',  5,   40, 240,  40,  True, 'HS', 1],
                                ['bneck',  5,   40, 120,  48,  True, 'HS', 1],
-                               ['bneck',  5,   40, 144,  48,  True, 'HS', 1],
-                               ['bneck',  5,   40, 288,  96,  True, 'HS', 2],
-                               ['bneck',  5,   40, 576,  96,  True, 'HS', 1],
-                               ['bneck',  5,   40, 576,  96,  True, 'HS', 1]]
+                               ['bneck',  5,   48, 144,  48,  True, 'HS', 1],
+                               ['bneck',  5,   48, 288,  96,  True, 'HS', 2],
+                               ['bneck',  5,   96, 576,  96,  True, 'HS', 1],
+                               ['bneck',  5,   96, 576,  96,  True, 'HS', 1]]
         # First layer
         self._features.append(_gen_init_conv_bn(3, 16, 2))
 
