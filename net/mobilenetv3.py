@@ -70,3 +70,11 @@ class MobileNetV3Large(nn.Module):
         x = self._features(x)
         x = self._classifier(x)
         return x
+
+
+class MobileNetV3Small(nn.Module):
+    def __init__(self):
+        pass
+
+    def foward(self, x):
+        pass
