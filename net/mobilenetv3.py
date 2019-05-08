@@ -92,18 +92,17 @@ class MobileNetV3Small(nn.Module):
         self._features = []
 
         # [op, kernel_size, hidden_dim(exp size), in_dim, out_dim(#out), SE, NL, s]
-        self._layer_configs = [['bneck',  3,   16,  16,  16,  True, 'RE', 2],
-                               ['bneck',  3,   16,  72,  24, False, 'RE', 2],
-                               ['bneck',  3,   24,  88,  24, False, 'RE', 1],
-                               ['bneck',  5,   24,  96,  40,  True, 'HS', 1],
-                               ['bneck',  5,   40, 240,  40,  True, 'HS', 1],
-                               ['bneck',  5,   40, 240,  40,  True, 'HS', 1],
-                               ['bneck',  5,   40, 240,  40,  True, 'HS', 1],
-                               ['bneck',  5,   40, 120,  48,  True, 'HS', 1],
-                               ['bneck',  5,   48, 144,  48,  True, 'HS', 1],
-                               ['bneck',  5,   48, 288,  96,  True, 'HS', 2],
-                               ['bneck',  5,   96, 576,  96,  True, 'HS', 1],
-                               ['bneck',  5,   96, 576,  96,  True, 'HS', 1]]
+        self._layer_configs = [['bneck',  3,  16,   16,  16,  True, 'RE', 2],
+                               ['bneck',  3,  72,   16,  24, False, 'RE', 2],
+                               ['bneck',  3,  88,   24,  24, False, 'RE', 1],
+                               ['bneck',  5,  96,   24,  40,  True, 'HS', 1],
+                               ['bneck',  5, 240,   40,  40,  True, 'HS', 1],
+                               ['bneck',  5, 240,   40,  40,  True, 'HS', 1],
+                               ['bneck',  5, 120,   40,  48,  True, 'HS', 1],
+                               ['bneck',  5, 144,   48,  48,  True, 'HS', 1],
+                               ['bneck',  5, 288,   48,  96,  True, 'HS', 2],
+                               ['bneck',  5, 576,   96,  96,  True, 'HS', 1],
+                               ['bneck',  5, 576,   96,  96,  True, 'HS', 1]]
         # First layer
         self._features.append(_gen_init_conv_bn(3, 16, 2))
 
