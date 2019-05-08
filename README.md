@@ -2,7 +2,7 @@
 This is an unofficial implementation of [MobileNetV3](https://arxiv.org/pdf/1905.02244.pdf) in PyTorch.
 
 ## How to use:
-You can load models as follows:
+Models are found under `net` folder. You can load models as follows:
 ```python
 from mobilenetv3 import MobileNetV3Large, MobileNetV3Small
 
