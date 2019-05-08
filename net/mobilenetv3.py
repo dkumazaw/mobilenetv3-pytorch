@@ -118,7 +118,7 @@ class MobileNetV3Small(nn.Module):
         # Classifier
         self._classifier = _gen_classifier(1280, n_classes)
 
-    def foward(self, x):
+    def forward(self, x):
         x = self._features(x)
         x = self._classifier(x)
         return x
