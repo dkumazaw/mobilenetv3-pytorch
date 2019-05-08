@@ -15,10 +15,20 @@ def _gen_block_layer(config: list):
     return Block(in_dim, out_dim, hidden_dim, kernel_size, stride, nl, se)
 
 
-def _gen_final_layer(in_dim: int, hidden_dim: int, out_dim: int):
+def _gen_final_layer_bn(in_dim: int, hidden_dim: int, out_dim: int):
     return nn.Sequential(
-        nn.Conv2d(in_dim, )
+        nn.Conv2d(in_dim, hidden_dim, 1, bias=False),
+        nn.BatchNorm2d(hidden_dim),
+        HardSwish(),
+        nn.AvgPool2d(7),
+        HardSwish(),
+        nn.Conv2d(hidden_dim, out_dim, 1, bias=False),
+        HardSwish()
     )
+
+
+def _gen_classifier(in_dim: int, out_dim: int):
+    return nn.Conv2d(in_dim, out_dim, 1, bias=False)
 
 
 class MobileNetV3Large(nn.Module):
@@ -50,5 +60,14 @@ class MobileNetV3Large(nn.Module):
             self._features.append(_gen_block_layer(config))
 
         # Final layer
+        self._features.append(_gen_final_layer_bn(160, 960, 1280))
+
+        self._features = nn.Sequential(*self._features)
+
+        self._classifier = _gen_classifier(1280, n_classes)
 
     def forward(self, x):
+        x = self._features(x)
+        n, c, _, _ = x.shape
+        x = self._classifier(x.view(n, c))
+        return x
