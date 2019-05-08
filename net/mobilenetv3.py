@@ -33,7 +33,7 @@ def _gen_classifier(in_dim: int, out_dim: int):
 
 class MobileNetV3Large(nn.Module):
     def __init__(self, n_classes=1000, input_size=224):
-
+        super(MobileNetV3Large, self).__init__()
         self._features = []
 
         # First layer
