@@ -3,7 +3,7 @@ This is an unofficial implementation of [MobileNetV3](https://arxiv.org/pdf/1905
 
 ## How to use:
 You can load models as follows:
-```
+```python
 from mobilenetv3 import MobileNetV3Large, MobileNetV3Small
 
 model_large = MobileNetV3Large(n_classes=1000) # Or use small
