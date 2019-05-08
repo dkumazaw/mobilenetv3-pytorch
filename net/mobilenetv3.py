@@ -27,6 +27,19 @@ def _gen_final_layer_bn(in_dim: int, hidden_dim: int, out_dim: int):
     )
 
 
+def _gen_final_layer_no_bn(in_dim: int, hidden_dim: int, out_dim: int):
+    return nn.Sequential(
+        nn.Conv2d(in_dim, hidden_dim, 1, bias=False),
+        nn.BatchNorm2d(hidden_dim),
+        HardSwish(),
+        nn.AvgPool2d(7),
+        HardSwish(),
+        nn.Conv2d(hidden_dim, out_dim, 1, bias=False),
+        nn.BatchNorm2d(out_dim),
+        HardSwish()
+    )
+
+
 def _gen_classifier(in_dim: int, out_dim: int):
     return nn.Conv2d(in_dim, out_dim, 1, bias=False)
 
