@@ -1,104 +1,54 @@
 from torch import nn
+from module import *
 
 
-class HardSigmoid(nn.Module):
-    def __init__(self):
-        super(HardSigmoid, self).__init__()
-        self._relu6_layer = nn.ReLU6()
-
-    def forward(self, x):
-        return self._relu6_layer(x + 3) / 6
-
-
-class HardSwish(nn.Module):
-    def __init__(self):
-        super(HardSwish, self).__init__()
-        self._hard_sigmoid = HardSigmoid()
-
-    def forward(self, x):
-        return x * self._hard_sigmoid(x)
-
-
-# Refer to https://github.com/moskomule/senet.pytorch/
-class SqueezeAndExcite(nn.Module):
-    def __init__(self, channel):
-        super(SqueezeAndExcite, self).__init__()
-        self._avg_pool = nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Sequential(
-            nn.Linear(channel, channel, bias=False),
-            nn.ReLU(inplace=True),
-            nn.Linear(channel, channel, bias=False),
-            HardSigmoid()
-        )
-
-    def forward(self, x):
-        n, c, _, _ = x.size()
-        y = self._avg_pool(x).view(n, c)
-        y = self.fc(y).view(n, c, 1, 1)
-        return x * y.expand_as(x)
-
-
-def _init_conv_bn(indim, outdim, stride):
+def _gen_init_conv_bn(in_dim: int, out_dim: int, stride: int):
     return nn.Sequential(
-        nn.Conv2d(indim, outdim, 3, stride, 1, bias=False),
-        nn.BatchNorm2d(outdim),
+        nn.Conv2d(in_dim, out_dim, 3, stride, 1, bias=False),
+        nn.BatchNorm2d(out_dim),
         HardSwish()
     )
 
 
-class Block(nn.Module):
-    def __init__(self, indim: int, outdim: int, kernel_size: int, stride: int, t: int, nl: str, se: bool):
-        super(Block, self).__init__()
+def _gen_block_layer(config: list):
+    op, kernel_size, hidden_dim, in_dim, out_dim, se, nl, stride = config
+    return Block(in_dim, out_dim, hidden_dim, kernel_size, stride, nl, se)
 
-        if nl == 'HS':
-            self._non_linearity = HardSwish
-        elif nl == 'RE':
-            self._non_linearity = nn.ReLU6
-        else:
-            raise ValueError('Non-linearity must be either HS or RE.')
 
-        hidden_dim = indim * t
-
-        if se:
-            self._layers = nn.Sequential(
-                # 1x1 w/o activation
-                nn.Conv2d(indim, hidden_dim, 1, bias=False),
-                nn.BatchNorm2d(hidden_dim),
-                # kernel_size x kernel_size depthwise w/ activation
-                nn.Conv2d(hidden_dim, hidden_dim, kernel_size, stride,
-                          1, groups=hidden_dim, bias=False),
-                SqueezeAndExcite(hidden_dim),  # Squeeze and excite
-                nn.BatchNorm2d(hidden_dim),
-                self._non_linearity(),
-                # 1x1 w/ activation
-                nn.Conv2d(hidden_dim, outdim, 1, 1, 0, bias=False),
-                nn.BatchNorm2d(outdim),
-                self._non_linearity()
-            )
-        else:
-            self._layers = nn.Sequential(
-                # 1x1 w/o activation
-                nn.Conv2d(indim, hidden_dim, 1, bias=False),
-                nn.BatchNorm2d(hidden_dim),
-                # kernel_size x kernel_size depthwise w/ activation
-                nn.Conv2d(hidden_dim, hidden_dim, kernel_size, stride,
-                          1, groups=hidden_dim, bias=False),
-                nn.BatchNorm2d(hidden_dim),
-                self._non_linearity(),
-                # 1x1 w/ activation
-                nn.Conv2d(hidden_dim, outdim, 1, 1, 0, bias=False),
-                nn.BatchNorm2d(outdim),
-                self._non_linearity()
-            )
-
-    def forward(self, x):
-        return self._layers(x)
+def _gen_final_layer(in_dim: int, hidden_dim: int, out_dim: int):
+    return nn.Sequential(
+        nn.Conv2d(in_dim, )
+    )
 
 
 class MobileNetV3Large(nn.Module):
     def __init__(self, n_classes=1000, input_size=224):
 
-        self._features = [_init_conv_bn(3, 16, 2)]
+        self._features = []
+
+        # First layer
+        self._features.append(_gen_init_conv_bn(3, 16, 2))
+
+        # [op, kernel_size, hidden_dim(exp size), in_dim, out_dim(#out), SE, NL, s]
+        self._layer_configs = [['bneck',  3,   16,  16,  16, False, 'RE', 1],
+                               ['bneck',  3,   64,  16,  24, False, 'RE', 2],
+                               ['bneck',  3,   72,  24,  24, False, 'RE', 1],
+                               ['bneck',  5,   72,  24,  40,  True, 'RE', 2],
+                               ['bneck',  5,  120,  40,  40,  True, 'RE', 1],
+                               ['bneck',  5,  120,  40,  40,  True, 'RE', 1],
+                               ['bneck',  3,  240,  40,  80, False, 'HS', 2],
+                               ['bneck',  3,  200,  80,  80, False, 'HS', 1],
+                               ['bneck',  3,  184,  80,  80, False, 'HS', 1],
+                               ['bneck',  3,  184,  80,  80, False, 'HS', 1],
+                               ['bneck',  3,  480,  80, 112,  True, 'HS', 1],
+                               ['bneck',  3,  672, 112, 112,  True, 'HS', 1],
+                               ['bneck',  5,  672, 112, 160,  True, 'HS', 1],
+                               ['bneck',  5,  672, 160, 160,  True, 'HS', 2],
+                               ['bneck',  5,  960, 160, 160,  True, 'HS', 1]]
+
+        for config in self._layer_configs:
+            self._features.append(_gen_block_layer(config))
+
+        # Final layer
 
     def forward(self, x):
-        pass

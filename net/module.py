@@ -39,7 +39,7 @@ class SqueezeAndExcite(nn.Module):
 
 
 class Block(nn.Module):
-    def __init__(self, indim: int, outdim: int, hidden_dim: int, kernel_size: int, stride: int, nl: str, se: bool):
+    def __init__(self, in_dim: int, out_dim: int, hidden_dim: int, kernel_size: int, stride: int, nl: str, se: bool):
         super(Block, self).__init__()
 
         if nl == 'HS':
@@ -52,7 +52,7 @@ class Block(nn.Module):
         if se:
             self._layers = nn.Sequential(
                 # 1x1 w/o activation
-                nn.Conv2d(indim, hidden_dim, 1, bias=False),
+                nn.Conv2d(in_dim, hidden_dim, 1, bias=False),
                 nn.BatchNorm2d(hidden_dim),
                 # kernel_size x kernel_size depthwise w/ activation
                 nn.Conv2d(hidden_dim, hidden_dim, kernel_size, stride,
@@ -61,14 +61,14 @@ class Block(nn.Module):
                 nn.BatchNorm2d(hidden_dim),
                 self._non_linearity(),
                 # 1x1 w/ activation
-                nn.Conv2d(hidden_dim, outdim, 1, 1, 0, bias=False),
-                nn.BatchNorm2d(outdim),
+                nn.Conv2d(hidden_dim, out_dim, 1, 1, 0, bias=False),
+                nn.BatchNorm2d(out_dim),
                 self._non_linearity()
             )
         else:
             self._layers = nn.Sequential(
                 # 1x1 w/o activation
-                nn.Conv2d(indim, hidden_dim, 1, bias=False),
+                nn.Conv2d(in_dim, hidden_dim, 1, bias=False),
                 nn.BatchNorm2d(hidden_dim),
                 # kernel_size x kernel_size depthwise w/ activation
                 nn.Conv2d(hidden_dim, hidden_dim, kernel_size, stride,
@@ -76,8 +76,8 @@ class Block(nn.Module):
                 nn.BatchNorm2d(hidden_dim),
                 self._non_linearity(),
                 # 1x1 w/ activation
-                nn.Conv2d(hidden_dim, outdim, 1, 1, 0, bias=False),
-                nn.BatchNorm2d(outdim),
+                nn.Conv2d(hidden_dim, out_dim, 1, 1, 0, bias=False),
+                nn.BatchNorm2d(out_dim),
                 self._non_linearity()
             )
 
