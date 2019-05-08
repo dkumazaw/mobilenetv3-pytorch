@@ -87,8 +87,39 @@ class MobileNetV3Large(nn.Module):
 
 
 class MobileNetV3Small(nn.Module):
-    def __init__(self):
-        pass
+    def __init__(self, n_classes=1000, input_size=224):
+        super(MobileNetV3Small, self).__init__()
+        self._features = []
+
+        # First layer
+        self._features.append(_gen_init_conv_bn(3, 16, 2))
+
+        # [op, kernel_size, hidden_dim(exp size), in_dim, out_dim(#out), SE, NL, s]
+        self._layer_configs = [['bneck',  3,   16,  16,  16,  True, 'RE', 2],
+                               ['bneck',  3,   16,  72,  24, False, 'RE', 2],
+                               ['bneck',  3,   24,  88,  24, False, 'RE', 1],
+                               ['bneck',  5,   24,  96,  40,  True, 'HS', 1],
+                               ['bneck',  5,   40, 240,  40,  True, 'HS', 1],
+                               ['bneck',  5,   40, 240,  40,  True, 'HS', 1],
+                               ['bneck',  5,   40, 240,  40,  True, 'HS', 1],
+                               ['bneck',  5,   40, 120,  48,  True, 'HS', 1],
+                               ['bneck',  5,   40, 144,  48,  True, 'HS', 1],
+                               ['bneck',  5,   40, 288,  96,  True, 'HS', 2],
+                               ['bneck',  5,   40, 576,  96,  True, 'HS', 1],
+                               ['bneck',  5,   40, 576,  96,  True, 'HS', 1]]
+
+        for config in self._layer_configs:
+            self._features.append(_gen_block_layer(config))
+
+        # Final layer
+        self._features.append(_gen_final_layer_no_bn(96, 576, 1280))
+
+        self._features = nn.Sequential(*self._features)
+
+        # Classifier
+        self._classifier = _gen_classifier(1280, n_classes)
 
     def foward(self, x):
-        pass
+        x = self._features(x)
+        x = self._classifier(x)
+        return x
