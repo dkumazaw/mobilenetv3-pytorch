@@ -15,7 +15,7 @@ def _gen_block_layer(config: list):
     return Block(in_dim, out_dim, hidden_dim, kernel_size, stride, nl, se)
 
 
-def _gen_final_layer_bn(in_dim: int, hidden_dim: int, out_dim: int):
+def _gen_final_layer_no_bn(in_dim: int, hidden_dim: int, out_dim: int):
     return nn.Sequential(
         nn.Conv2d(in_dim, hidden_dim, 1, bias=False),
         nn.BatchNorm2d(hidden_dim),
@@ -27,7 +27,7 @@ def _gen_final_layer_bn(in_dim: int, hidden_dim: int, out_dim: int):
     )
 
 
-def _gen_final_layer_no_bn(in_dim: int, hidden_dim: int, out_dim: int):
+def _gen_final_layer_bn(in_dim: int, hidden_dim: int, out_dim: int):
     return nn.Sequential(
         nn.Conv2d(in_dim, hidden_dim, 1, bias=False),
         nn.BatchNorm2d(hidden_dim),
@@ -73,7 +73,7 @@ class MobileNetV3Large(nn.Module):
             self._features.append(_gen_block_layer(config))
 
         # Final layer
-        self._features.append(_gen_final_layer_bn(160, 960, 1280))
+        self._features.append(_gen_final_layer_no_bn(160, 960, 1280))
 
         self._features = nn.Sequential(*self._features)
 
@@ -110,7 +110,7 @@ class MobileNetV3Small(nn.Module):
             self._features.append(_gen_block_layer(config))
 
         # Final layer
-        self._features.append(_gen_final_layer_no_bn(96, 576, 1280))
+        self._features.append(_gen_final_layer_bn(96, 576, 1280))
 
         self._features = nn.Sequential(*self._features)
 
