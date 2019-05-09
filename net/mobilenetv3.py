@@ -83,7 +83,8 @@ class MobileNetV3Large(nn.Module):
     def forward(self, x):
         x = self._features(x)
         x = self._classifier(x)
-        return x
+        n, c, _, _ = x.shape
+        return x.view(n, c)
 
 
 class MobileNetV3Small(nn.Module):
