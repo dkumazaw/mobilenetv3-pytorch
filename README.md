@@ -1,5 +1,5 @@
 # MobileNetV3 unofficial PyTorch implementation
-This is an unofficial implementation of [MobileNetV3](https://arxiv.org/pdf/1905.02244.pdf) in PyTorch.
+This is an unofficial implementation of [MobileNetV3](https://arxiv.org/pdf/1905.02244.pdf) in PyTorch. Currently this repo contains the small and large versions of MobileNetV3, but I plan to also implement detection and segmentation extensions.
 
 ## How to use:
 Models are found under `net` folder. You can load models as follows:
