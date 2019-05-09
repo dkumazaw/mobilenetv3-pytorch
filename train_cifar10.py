@@ -56,11 +56,11 @@ def main():
     test_sampler = SubsetRandomSampler(test_sampler)
 
     train_loader = DataLoader(
-        train_dataset, batch_size=200, shuffle=True, num_workers=8
+        train_dataset, batch_size=220, shuffle=True, num_workers=8
     )
 
     valid_loder = DataLoader(
-        valid_test_dataset, batch_size=200, sampler=valid_sampler, num_workers=8
+        valid_test_dataset, batch_size=220, sampler=valid_sampler, num_workers=8
     )
 
     trainer = Trainer(
@@ -68,7 +68,7 @@ def main():
         device=device, train_loader=train_loader, valid_loader=valid_loder
     )
 
-    epochs = 1
+    epochs = 50
     trainer.train(epochs=epochs)
 
 
