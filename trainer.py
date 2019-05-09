@@ -47,7 +47,7 @@ class Trainer:
             else:
                 is_best = False
 
-            utils.save_checkpoint(model.state_dict(),
+            utils.save_checkpoint(self.model.state_dict(),
                                   is_best, self.model_save_dir, epoch)
 
     def _train_epoch(self, epoch: int):
