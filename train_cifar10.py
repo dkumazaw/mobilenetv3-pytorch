@@ -55,9 +55,13 @@ def main():
     valid_sampler = SubsetRandomSampler(valid_indices)
     test_sampler = SubsetRandomSampler(test_sampler)
 
-    train_loader = DataLoader(train_dataset, batch_size=160, shuffle=True)
+    train_loader = DataLoader(
+        train_dataset, batch_size=200, shuffle=True, num_workers=8
+    )
+
     valid_loder = DataLoader(
-        valid_test_dataset, batch_size=160, sampler=valid_sampler)
+        valid_test_dataset, batch_size=200, sampler=valid_sampler, num_workers=8
+    )
 
     trainer = Trainer(
         model=model, criterion=criterion, optimizer=optimizer,
