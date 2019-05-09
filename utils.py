@@ -30,7 +30,7 @@ def accuracy(output, target, topk=(1,)):
         return res
 
 
-def save_checkpoint(state_dict, is_best, prefix, savedir, epoch):
+def save_checkpoint(state_dict, is_best, savedir, epoch):
     filename = os.path.join(savedir, 'checkpoint_ep{}.pt'.format(epoch))
     torch.save(state_dict, filename)
 
