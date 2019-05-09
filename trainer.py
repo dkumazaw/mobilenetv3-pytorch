@@ -49,7 +49,7 @@ class Trainer:
         """Trains the model for one epoch"""
         total_loss = utils.AveTracker()
         top1_acc = utils.AveTracker()
-        top5_acc_acc = utils.AveTracker()
+        top5_acc = utils.AveTracker()
         self.model.train()
 
         for step, (x, y) in enumerate(self.train_loader):
@@ -63,15 +63,15 @@ class Trainer:
 
             prec1, prec5 = utils.accuracy(logits, y, topk=(1, 5))
             n = x.size(0)
-            total_loss.update(loss.data[0], n)
-            top1_acc.update(prec1.data[0], n)
-            top5_acc.update(prec5.data[0], n)
+            total_loss.update(loss.item(), n)
+            top1_acc.update(prec1.item(), n)
+            top5_acc.update(prec5.item(), n)
 
             if step % 100 == 0:
                 logging.info('train %d %e %f %f', step,
-                             total_loss.avg, top1_acc.avg, top5_acc.avg)
+                             total_loss.average, top1_acc.average, top5_acc.average)
 
-        return top1_acc.avg, top5_acc.avg, total_loss.avg
+        return top1_acc.average, top5_acc.average, total_loss.average
 
     def _valid_epoch(self, epoch):
         """Runs validation"""
@@ -89,12 +89,12 @@ class Trainer:
 
                 prec1, prec5 = utils.accuracy(logits, y, topk=(1, 5))
                 n = x.size(0)
-                total_loss.update(loss.data[0], n)
-                top1_acc.update(prec1.data[0], n)
-                top5_acc.update(prec5.data[0], n)
+                total_loss.update(loss.item(), n)
+                top1_acc.update(prec1.item(), n)
+                top5_acc.update(prec5.item(), n)
 
                 if step % 100 == 0:
                     logging.info('valid %d %e %f %f', step,
-                                 total_loss.avg, top1_acc.avg, top5_acc.avg)
+                                 total_loss.average, top1_acc.average, top5_acc.average)
 
-        return top1_acc.avg, top5_acc.avg, total_loss.avg
+        return top1_acc.average, top5_acc.average, total_loss.average
