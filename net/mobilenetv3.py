@@ -1,5 +1,5 @@
 from torch import nn
-from module import *
+from .module import *
 
 
 def _gen_init_conv_bn(in_dim: int, out_dim: int, stride: int):
