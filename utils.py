@@ -39,5 +39,5 @@ def save_checkpoint(state_dict, is_best, savedir, epoch):
     torch.save(state_dict, filename)
 
     if is_best:
-        best_filename = os.path.join(savepath, 'model_best.pt')
+        best_filename = os.path.join(savedir, 'model_best.pt')
         shutil.copyfile(filename, best_filename)
