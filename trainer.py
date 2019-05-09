@@ -20,6 +20,8 @@ class Trainer:
         self.valid_loader = valid_loader
         self.model_save_dir = model_save_dir
 
+        self.model = self.model.to(device)
+
     def train(self, epochs: int):
         """Trains the model for epochs"""
 
