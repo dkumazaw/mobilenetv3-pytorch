@@ -33,6 +33,8 @@ def accuracy(output, target, topk=(1,)):
 
 
 def save_checkpoint(state_dict, is_best, savedir, epoch):
+    if not os.path.exists(savedir):
+        os.makedirs(savedir)
     filename = os.path.join(savedir, 'checkpoint_ep{}.pt'.format(epoch))
     torch.save(state_dict, filename)
 
