@@ -10,7 +10,7 @@ class AveTracker:
         self.sum = 0
         self.counter = 0
 
-    def add_value(self, value, n):
+    def update(self, value, n):
         self.sum += value * n
         self.counter += n
         self.average = self.sum / self.counter
