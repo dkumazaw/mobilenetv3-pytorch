@@ -8,18 +8,21 @@ import torchvision
 from torchvision import transforms
 
 from net.mobilenetv3 import MobileNetV3Large, MobileNetV3Small
+from trainer import Trainer
+import utils
 
 
 def main():
 
-    model = MobileNetV3Large()
+    model = MobileNetV3Large(n_classes=10)
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = torch.optim.Adam(lr=3e-4)
+    optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
     device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
 
     transform_train = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
+        transforms.Resize((224, 224)),  # Upsample
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize((0.4914, 0.4822, 0.4465),
@@ -27,6 +30,7 @@ def main():
     ])
 
     transform_valid = transforms.Compose([
+        transforms.Resize((224, 224)),  # Upsample
         transforms.ToTensor(),
         transforms.Normalize((0.4914, 0.4822, 0.4465),
                              (0.2023, 0.1994, 0.2010)),
@@ -55,12 +59,12 @@ def main():
     valid_loder = DataLoader(
         valid_test_dataset, batch_size=160, sampler=valid_sampler)
 
-    trainer = Traner(
+    trainer = Trainer(
         model=model, criterion=criterion, optimizer=optimizer,
         device=device, train_loader=train_loader, valid_loader=valid_loder
     )
 
-    epochs = 50
+    epochs = 1
     trainer.train(epochs=epochs)
 
 
