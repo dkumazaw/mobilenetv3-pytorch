@@ -10,13 +10,15 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 class Trainer:
-    def __init__(self, model, criterion, optimizer, device, train_loader, valid_loader):
+    def __init__(self, model, criterion, optimizer,
+                 device, train_loader, valid_loader, model_save_dir='./models/cifar'):
         self.model = model
         self.criterion = criterion
         self.optimizer = optimizer
         self.device = device
         self.train_loader = train_loader
         self.valid_loader = valid_loader
+        self.model_save_dir = model_save_dir
 
     def train(self, epochs: int):
         """Trains the model for epochs"""
@@ -43,7 +45,8 @@ class Trainer:
             else:
                 is_best = False
 
-            utils.save_checkpoint(model.state_dict(), is_best, savedir, epoch)
+            utils.save_checkpoint(model.state_dict(),
+                                  is_best, self.model_save_dir, epoch)
 
     def _train_epoch(self, epoch: int):
         """Trains the model for one epoch"""
