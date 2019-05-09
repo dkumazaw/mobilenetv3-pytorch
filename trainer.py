@@ -1,5 +1,12 @@
 # Inspired by https://github.com/victoresque/pytorch-template/
 import logging
+import sys
+
+import torch
+
+import utils
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 class Trainer:
