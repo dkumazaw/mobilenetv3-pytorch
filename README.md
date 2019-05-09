@@ -17,6 +17,12 @@ To run the training, you can simply execute:
 python train_cifar10.py
 ```
 
+### Performance 
+(WIP)
+
+## Train on ImageNet [WIP]
+(WIP)
+
 ## TODO:
 - [ ] training code for ImageNet
 - [ ] Detection: SSDLite
