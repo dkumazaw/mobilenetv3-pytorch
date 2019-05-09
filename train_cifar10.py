@@ -41,7 +41,7 @@ def main():
     )
 
     valid_test_dataset = torchvision.datasets.CIFAR10(
-        './data/cifar/train', train=False, transform=transform_valid, download=True
+        './data/cifar/test', train=False, transform=transform_valid, download=True
     )
 
     # Split valid_test_dataset into two
