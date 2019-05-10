@@ -15,6 +15,10 @@ from net.mobilenetv3 import MobileNetV3Large, MobileNetV3Small
 from trainer import Trainer
 import utils
 
+BATCH_SIZE = 240
+NUM_WORKERS = 16
+EPOCHS = 1
+
 
 def main():
 
@@ -71,15 +75,15 @@ def main():
     valid_sampler = SubsetRandomSampler(valid_indices)
 
     train_loader = DataLoader(
-        train_val_dataset, batch_size=220, sampler=train_sampler, num_workers=8
+        train_val_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=NUM_WORKERS
     )
 
     valid_loader = DataLoader(
-        train_val_dataset, batch_size=220, sampler=valid_sampler, num_workers=8
+        train_val_dataset, batch_size=BATCH_SIZE, sampler=valid_sampler, num_workers=NUM_WORKERS
     )
 
     test_loader = DataLoader(
-        test_dataset, batch_size=220, num_workers=8
+        test_dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS
     )
 
     model_save_dir = './models/imagenet-{}'.format(
@@ -98,7 +102,7 @@ def main():
     consoleHandler = logging.StreamHandler()
     logger.addHandler(consoleHandler)
 
-    epochs = 1
+    epochs = EPOCHS
 
     trainer = Trainer(
         model=model, criterion=criterion, optimizer=optimizer, scheduler=scheduler,
