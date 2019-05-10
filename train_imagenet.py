@@ -95,6 +95,8 @@ def main():
                         datefmt='%H:%M:%S',
                         level=logging.DEBUG)
     logger = logging.getLogger(__file__)
+    consoleHandler = logging.StreamHandler()
+    logger.addHandler(consoleHandler)
 
     epochs = 50
 
