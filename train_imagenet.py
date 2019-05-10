@@ -36,6 +36,11 @@ def main():
     )
 
     model = MobileNetV3Large(n_classes=1000)
+    if torch.cuda.device_count() > 1:
+        logger.info('Parallelize by using {} available GPUs'.format(
+            torch.cuda.device_count())
+        )
+        model = nn.DataParallel(model)
 
     criterion = nn.CrossEntropyLoss()
 
