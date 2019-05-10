@@ -11,6 +11,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 import torchvision
 from torchvision import transforms
 
+from mylogger import create_logger
 from net.mobilenetv3 import MobileNetV3Large, MobileNetV3Small
 from trainer import Trainer
 import utils
@@ -21,6 +22,17 @@ EPOCHS = 1
 
 
 def main():
+
+    # Initialize the folder in which all training results will be saved
+    model_save_dir = './models/imagenet-{}'.format(
+        datetime.now().strftime('%Y%m%d-%H%M%S'))
+    if not os.path.exists(model_save_dir):
+        os.makedirs(model_save_dir)
+
+    logger = create_logger(
+        filename=os.path.join(model_save_dir, 'log.log'),
+        logger_prefix=__file__
+    )
 
     model = MobileNetV3Large(n_classes=1000)
     criterion = nn.CrossEntropyLoss()
@@ -85,22 +97,6 @@ def main():
     test_loader = DataLoader(
         test_dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS
     )
-
-    model_save_dir = './models/imagenet-{}'.format(
-        datetime.now().strftime('%Y%m%d-%H%M%S'))
-    if not os.path.exists(model_save_dir):
-        os.makedirs(model_save_dir)
-
-    log_name = os.path.join(model_save_dir, 'log.log')
-
-    logging.basicConfig(filename=log_name,
-                        filemode='a',
-                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-                        datefmt='%H:%M:%S',
-                        level=logging.DEBUG)
-    logger = logging.getLogger(__file__)
-    consoleHandler = logging.StreamHandler()
-    logger.addHandler(consoleHandler)
 
     epochs = EPOCHS
 
