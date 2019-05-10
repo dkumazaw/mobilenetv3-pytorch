@@ -20,10 +20,13 @@ python train_cifar10.py
 ### Performance 
 (WIP)
 
-## Train on ImageNet [WIP]
+## Train on ImageNe
+To train the models on ImageNet, run `train_imagenet.py`. The script assumes that the imagenet dataset is placed under `data/imagenet/` folder. 
+
+### Performance
 (WIP)
 
 ## TODO:
-- [ ] training code for ImageNet
+- [ ] Training code for ImageNet
 - [ ] Detection: SSDLite
 - [ ] Segmentation:  Lite R-ASPP
