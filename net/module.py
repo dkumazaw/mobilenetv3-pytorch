@@ -19,15 +19,14 @@ class HardSwish(nn.Module):
         return x * self._hard_sigmoid(x)
 
 
-# Refer to https://github.com/moskomule/senet.pytorch/
 class SqueezeAndExcite(nn.Module):
-    def __init__(self, channel):
+    def __init__(self, channel, reduce_factor=4):
         super(SqueezeAndExcite, self).__init__()
         self._avg_pool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Sequential(
-            nn.Linear(channel, channel, bias=False),
+            nn.Linear(channel, channel // reduce_factor),
             nn.ReLU(inplace=True),
-            nn.Linear(channel, channel, bias=False),
+            nn.Linear(channel // reduce_factor, channel),
             HardSigmoid()
         )
 
@@ -35,7 +34,7 @@ class SqueezeAndExcite(nn.Module):
         n, c, _, _ = x.size()
         y = self._avg_pool(x).view(n, c)
         y = self.fc(y).view(n, c, 1, 1)
-        return x * y.expand_as(x)
+        return x * y
 
 
 class Block(nn.Module):
