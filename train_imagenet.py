@@ -19,7 +19,13 @@ def main():
     model = MobileNetV3Large(n_classes=1000)
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = nn.optim.Adam(lr=3e-4)
+    optimizer = torch.optim.RMSprop(
+        model.parameters(), lr=0.1, alpha=0.9999, momentum=0.9, weight_decay=1e-5
+    )
+    scheduler = torch.optim.lr_scheduler.StepLR(
+        optimizer, step_size=3, gamma=0.01
+    )
+
     device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
 
     normalizer = transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -89,7 +95,7 @@ def main():
     epochs = 50
 
     trainer = Traner(
-        model=model, criterion=criterion, optimizer=optimizer,
+        model=model, criterion=criterion, optimizer=optimizer, scheduler=scheduler,
         device=device, train_loader=train_loader, valid_loader=valid_loder,
         epochs=epochs, logger=logger, model_save_dir=model_save_dir
     )
