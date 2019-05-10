@@ -2,18 +2,18 @@ from torch import nn
 
 
 class HardSigmoid(nn.Module):
-    def __init__(self):
+    def __init__(self, inplace=True):
         super(HardSigmoid, self).__init__()
-        self._relu6_layer = nn.ReLU6()
+        self._relu6_layer = nn.ReLU6(inplace=inplace)
 
     def forward(self, x):
         return self._relu6_layer(x + 3) / 6
 
 
 class HardSwish(nn.Module):
-    def __init__(self):
+    def __init__(self, inplace=True):
         super(HardSwish, self).__init__()
-        self._hard_sigmoid = HardSigmoid()
+        self._hard_sigmoid = HardSigmoid(inplace=inplace)
 
     def forward(self, x):
         return x * self._hard_sigmoid(x)
