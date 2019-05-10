@@ -1,5 +1,5 @@
 # Inspired by https://github.com/victoresque/pytorch-template/
-import sys
+import time
 
 import torch
 
@@ -30,6 +30,7 @@ class Trainer:
 
         for epoch in range(self.epochs):
             self.logger.info('epoch %d', epoch)
+            start_time = time.time()
 
             # Training
             train_top1_acc, train_top5_acc, train_loss = self._train_epoch(
@@ -42,6 +43,9 @@ class Trainer:
                 epoch)
             self.logger.info('valid_top1_acc {:.5f}, valid_top5_acc {:.5f}, valid_loss {:.5f}'.format(
                 valid_top1_acc, valid_top5_acc, valid_loss))
+
+            elapsed = time.time() - start_time
+            self.logger.info('Took {} seconds'.format(elapsed))
 
             self.scheduler.step()
 
