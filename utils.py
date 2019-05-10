@@ -44,6 +44,10 @@ def save_checkpoint(state_dict, is_best, savedir, epoch):
         shutil.copyfile(filename, best_filename)
 
 
+def count_parameters_in_millions(model):
+    return np.sum(np.prod(w.size()) for w in model.parameters())/1e6
+
+
 class Cutout:
     """Applies cutout to input image"""
 
