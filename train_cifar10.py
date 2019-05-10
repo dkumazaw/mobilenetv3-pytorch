@@ -63,13 +63,13 @@ def main():
         valid_test_dataset, batch_size=220, sampler=valid_sampler, num_workers=8
     )
 
+    epochs = 50
+
     trainer = Trainer(
         model=model, criterion=criterion, optimizer=optimizer,
-        device=device, train_loader=train_loader, valid_loader=valid_loder
-    )
+        device=device, train_loader=train_loader, valid_loader=valid_loder, epochs=epochs)
 
-    epochs = 50
-    trainer.train(epochs=epochs)
+    trainer.train()
 
 
 if __name__ == '__main__':

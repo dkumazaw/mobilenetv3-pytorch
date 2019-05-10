@@ -11,7 +11,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 class Trainer:
     def __init__(self, model, criterion, optimizer,
-                 device, train_loader, valid_loader, model_save_dir='./models/cifar'):
+                 device, train_loader, valid_loader, epochs, model_save_dir='./models/cifar'):
         self.model = model
         self.criterion = criterion
         self.optimizer = optimizer
@@ -19,13 +19,14 @@ class Trainer:
         self.train_loader = train_loader
         self.valid_loader = valid_loader
         self.model_save_dir = model_save_dir
+        self.epochs = epochs
 
         self.model = self.model.to(device)
 
-    def train(self, epochs: int):
+    def train(self):
         """Trains the model for epochs"""
 
-        for epoch in range(epochs):
+        for epoch in range(self.epochs):
             logging.info('epoch %d', epoch)
             best_valid_loss = float('inf')
 
