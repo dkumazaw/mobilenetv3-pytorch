@@ -12,6 +12,7 @@ import torchvision
 from torchvision import transforms
 
 from net.mobilenetv3 import MobileNetV3Large, MobileNetV3Small
+from trainer import Trainer
 import utils
 
 
@@ -97,7 +98,7 @@ def main():
 
     epochs = 50
 
-    trainer = Traner(
+    trainer = Trainer(
         model=model, criterion=criterion, optimizer=optimizer, scheduler=scheduler,
         device=device, train_loader=train_loader, valid_loader=valid_loder,
         epochs=epochs, logger=logger, model_save_dir=model_save_dir
