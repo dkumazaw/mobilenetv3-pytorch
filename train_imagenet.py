@@ -96,15 +96,15 @@ def main():
     valid_sampler = SubsetRandomSampler(valid_indices)
 
     train_loader = DataLoader(
-        train_val_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=NUM_WORKERS, pin_memory=True
+        train_val_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=NUM_WORKERS
     )
 
     valid_loader = DataLoader(
-        train_val_dataset, batch_size=BATCH_SIZE, sampler=valid_sampler, num_workers=NUM_WORKERS, pin_memory=True
+        train_val_dataset, batch_size=BATCH_SIZE, sampler=valid_sampler, num_workers=NUM_WORKERS
     )
 
     test_loader = DataLoader(
-        test_dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, pin_memory=True
+        test_dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS
     )
 
     epochs = EPOCHS
