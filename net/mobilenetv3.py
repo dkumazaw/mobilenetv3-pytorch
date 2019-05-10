@@ -41,7 +41,10 @@ def _gen_final_layer_bn(in_dim: int, hidden_dim: int, out_dim: int):
 
 
 def _gen_classifier(in_dim: int, out_dim: int):
-    return nn.Conv2d(in_dim, out_dim, 1, bias=False)
+    return nn.Sequential(
+        nn.Dropout(p=0.2, inplace=True),
+        nn.Conv2d(in_dim, out_dim, 1, bias=False)
+    )
 
 
 class MobileNetV3Large(nn.Module):
