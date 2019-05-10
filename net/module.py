@@ -50,37 +50,32 @@ class Block(nn.Module):
 
         self._will_skipconnect = stride == 1 and in_dim == out_dim
 
+        layers_list = [
+            # 1x1 w/o activation
+            nn.Conv2d(in_dim, hidden_dim, kernel_size=1, bias=False),
+            nn.BatchNorm2d(hidden_dim),
+
+            # kernel_size x kernel_size depthwise w/ activation
+            nn.Conv2d(hidden_dim, hidden_dim, kernel_size=kernel_size, stride=stride,
+                        padding=kernel_size//2, groups=hidden_dim, bias=False),
+        ]
+
         if se:
-            self._layers = nn.Sequential(
-                # 1x1 w/o activation
-                nn.Conv2d(in_dim, hidden_dim, kernel_size=1, bias=False),
-                nn.BatchNorm2d(hidden_dim),
-                # kernel_size x kernel_size depthwise w/ activation
-                nn.Conv2d(hidden_dim, hidden_dim, kernel_size=kernel_size, stride=stride,
-                          padding=kernel_size//2, groups=hidden_dim, bias=False),
-                SqueezeAndExcite(hidden_dim),  # Squeeze and excite
-                nn.BatchNorm2d(hidden_dim),
-                self._non_linearity(),
-                # 1x1 w/ activation
-                nn.Conv2d(hidden_dim, out_dim, kernel_size=1, bias=False),
-                nn.BatchNorm2d(out_dim),
-                self._non_linearity()
+            layers_list.append(
+                SqueezeAndExcite(hidden_dim) # Squeeze and excite
             )
-        else:
-            self._layers = nn.Sequential(
-                # 1x1 w/o activation
-                nn.Conv2d(in_dim, hidden_dim, kernel_size=1, bias=False),
-                nn.BatchNorm2d(hidden_dim),
-                # kernel_size x kernel_size depthwise w/ activation
-                nn.Conv2d(hidden_dim, hidden_dim, kernel_size=kernel_size, stride=stride,
-                          padding=kernel_size//2, groups=hidden_dim, bias=False),
-                nn.BatchNorm2d(hidden_dim),
-                self._non_linearity(),
-                # 1x1 w/ activation
-                nn.Conv2d(hidden_dim, out_dim, kernel_size=1, bias=False),
-                nn.BatchNorm2d(out_dim),
-                self._non_linearity()
-            )
+        
+        layers_list.append(
+            nn.BatchNorm2d(hidden_dim),
+            self._non_linearity(),
+            
+            # 1x1 w/ activation
+            nn.Conv2d(hidden_dim, out_dim, kernel_size=1, bias=False),
+            nn.BatchNorm2d(out_dim),
+            self._non_linearity()
+        )
+
+        self._layers = nn.Sequential(*layers_list)
 
     def forward(self, x):
         out = self._layers(x)
