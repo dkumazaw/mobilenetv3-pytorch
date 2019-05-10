@@ -72,6 +72,7 @@ def main():
     ])
 
     transform_valid = transforms.Compose([
+        transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalizer
