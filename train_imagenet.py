@@ -100,7 +100,7 @@ def main():
 
     trainer = Trainer(
         model=model, criterion=criterion, optimizer=optimizer, scheduler=scheduler,
-        device=device, train_loader=train_loader, valid_loader=valid_loder,
+        device=device, train_loader=train_loader, valid_loader=valid_loader,
         epochs=epochs, logger=logger, model_save_dir=model_save_dir
     )
 
