@@ -25,7 +25,8 @@ def main():
 
     # Initialize the folder in which all training results will be saved
     model_save_dir = './models/imagenet-{}'.format(
-        datetime.now().strftime('%Y%m%d-%H%M%S'))
+        datetime.now().strftime('%Y%m%d-%H%M%S')
+    )
     if not os.path.exists(model_save_dir):
         os.makedirs(model_save_dir)
 
@@ -35,6 +36,7 @@ def main():
     )
 
     model = MobileNetV3Large(n_classes=1000)
+
     criterion = nn.CrossEntropyLoss()
 
     optimizer = torch.optim.RMSprop(
@@ -46,8 +48,10 @@ def main():
 
     device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
 
-    normalizer = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                      std=[0.229, 0.224, 0.225])
+    normalizer = transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    )
 
     transform_train = transforms.Compose([
         transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
