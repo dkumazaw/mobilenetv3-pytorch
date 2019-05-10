@@ -41,12 +41,12 @@ def main():
                                hue=0.1),
         transforms.ToTensor(),
         utils.Cutout(20),
-        normalizer()
+        normalizer
     ])
 
     transform_valid = transforms.Compose([
         transforms.ToTensor(),
-        normalizer()
+        normalizer
     ])
 
     train_val_dataset = torchvision.datasets.ImageFolder(
