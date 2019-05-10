@@ -26,10 +26,10 @@ class Trainer:
 
     def train(self):
         """Trains the model for epochs"""
+        best_valid_loss = float('inf')
 
         for epoch in range(self.epochs):
             self.logger.info('epoch %d', epoch)
-            best_valid_loss = float('inf')
 
             # Training
             train_top1_acc, train_top5_acc, train_loss = self._train_epoch(
