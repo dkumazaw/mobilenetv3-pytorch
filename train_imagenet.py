@@ -98,7 +98,7 @@ def main():
     consoleHandler = logging.StreamHandler()
     logger.addHandler(consoleHandler)
 
-    epochs = 50
+    epochs = 1
 
     trainer = Trainer(
         model=model, criterion=criterion, optimizer=optimizer, scheduler=scheduler,
@@ -107,6 +107,7 @@ def main():
     )
 
     trainer.train()
+    trainer.validate()
 
 
 if __name__ == '__main__':
