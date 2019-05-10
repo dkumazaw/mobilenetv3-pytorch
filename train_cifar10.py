@@ -50,10 +50,10 @@ def main():
     random.shuffle(indices)
 
     valid_indices = indices[:dataset_size//2]
-    test_sampler = indices[dataset_size//2:]
+    test_indices = indices[dataset_size//2:]
 
     valid_sampler = SubsetRandomSampler(valid_indices)
-    test_sampler = SubsetRandomSampler(test_sampler)
+    test_sampler = SubsetRandomSampler(test_indices)
 
     train_loader = DataLoader(
         train_dataset, batch_size=220, shuffle=True, num_workers=8
