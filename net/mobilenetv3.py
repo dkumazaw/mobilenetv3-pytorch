@@ -11,7 +11,7 @@ def _gen_init_conv_bn(in_dim: int, out_dim: int, stride: int):
 
 
 def _gen_block_layer(config: list):
-    op, kernel_size, hidden_dim, in_dim, out_dim, se, nl, stride = config
+    kernel_size, hidden_dim, in_dim, out_dim, se, nl, stride = config
     return Block(in_dim, out_dim, hidden_dim, kernel_size, stride, nl, se)
 
 
@@ -49,27 +49,27 @@ class MobileNetV3Large(nn.Module):
         super(MobileNetV3Large, self).__init__()
         self._features = []
 
-        # [op, kernel_size, hidden_dim(exp size), in_dim, out_dim(#out), SE, NL, s]
-        self._layer_configs = [['bneck',  3,   16,  16,  16, False, 'RE', 1],
-                               ['bneck',  3,   64,  16,  24, False, 'RE', 2],
-                               ['bneck',  3,   72,  24,  24, False, 'RE', 1],
-                               ['bneck',  5,   72,  24,  40,  True, 'RE', 2],
-                               ['bneck',  5,  120,  40,  40,  True, 'RE', 1],
-                               ['bneck',  5,  120,  40,  40,  True, 'RE', 1],
-                               ['bneck',  3,  240,  40,  80, False, 'HS', 2],
-                               ['bneck',  3,  200,  80,  80, False, 'HS', 1],
-                               ['bneck',  3,  184,  80,  80, False, 'HS', 1],
-                               ['bneck',  3,  184,  80,  80, False, 'HS', 1],
-                               ['bneck',  3,  480,  80, 112,  True, 'HS', 1],
-                               ['bneck',  3,  672, 112, 112,  True, 'HS', 1],
-                               ['bneck',  5,  672, 112, 160,  True, 'HS', 1],
-                               ['bneck',  5,  672, 160, 160,  True, 'HS', 2],
-                               ['bneck',  5,  960, 160, 160,  True, 'HS', 1]]
+        # [kernel_size, hidden_dim(exp size), in_dim, out_dim(#out), SE, NL, s]
+        self._block_layer_configs = [[3,   16,  16,  16, False, 'RE', 1],
+                                     [3,   64,  16,  24, False, 'RE', 2],
+                                     [3,   72,  24,  24, False, 'RE', 1],
+                                     [5,   72,  24,  40,  True, 'RE', 2],
+                                     [5,  120,  40,  40,  True, 'RE', 1],
+                                     [5,  120,  40,  40,  True, 'RE', 1],
+                                     [3,  240,  40,  80, False, 'HS', 2],
+                                     [3,  200,  80,  80, False, 'HS', 1],
+                                     [3,  184,  80,  80, False, 'HS', 1],
+                                     [3,  184,  80,  80, False, 'HS', 1],
+                                     [3,  480,  80, 112,  True, 'HS', 1],
+                                     [3,  672, 112, 112,  True, 'HS', 1],
+                                     [5,  672, 112, 160,  True, 'HS', 1],
+                                     [5,  672, 160, 160,  True, 'HS', 2],
+                                     [5,  960, 160, 160,  True, 'HS', 1]]
 
         # First layer
         self._features.append(_gen_init_conv_bn(3, 16, 2))
 
-        for config in self._layer_configs:
+        for config in self._block_layer_configs:
             self._features.append(_gen_block_layer(config))
 
         # Final layer
@@ -92,22 +92,22 @@ class MobileNetV3Small(nn.Module):
         super(MobileNetV3Small, self).__init__()
         self._features = []
 
-        # [op, kernel_size, hidden_dim(exp size), in_dim, out_dim(#out), SE, NL, s]
-        self._layer_configs = [['bneck',  3,  16,   16,  16,  True, 'RE', 2],
-                               ['bneck',  3,  72,   16,  24, False, 'RE', 2],
-                               ['bneck',  3,  88,   24,  24, False, 'RE', 1],
-                               ['bneck',  5,  96,   24,  40,  True, 'HS', 1],
-                               ['bneck',  5, 240,   40,  40,  True, 'HS', 1],
-                               ['bneck',  5, 240,   40,  40,  True, 'HS', 1],
-                               ['bneck',  5, 120,   40,  48,  True, 'HS', 1],
-                               ['bneck',  5, 144,   48,  48,  True, 'HS', 1],
-                               ['bneck',  5, 288,   48,  96,  True, 'HS', 2],
-                               ['bneck',  5, 576,   96,  96,  True, 'HS', 1],
-                               ['bneck',  5, 576,   96,  96,  True, 'HS', 1]]
+        # [kernel_size, hidden_dim(exp size), in_dim, out_dim(#out), SE, NL, s]
+        self._block_layer_configs = [[3,  16,   16,  16,  True, 'RE', 2],
+                                     [3,  72,   16,  24, False, 'RE', 2],
+                                     [3,  88,   24,  24, False, 'RE', 1],
+                                     [5,  96,   24,  40,  True, 'HS', 1],
+                                     [5, 240,   40,  40,  True, 'HS', 1],
+                                     [5, 240,   40,  40,  True, 'HS', 1],
+                                     [5, 120,   40,  48,  True, 'HS', 1],
+                                     [5, 144,   48,  48,  True, 'HS', 1],
+                                     [5, 288,   48,  96,  True, 'HS', 2],
+                                     [5, 576,   96,  96,  True, 'HS', 1],
+                                     [5, 576,   96,  96,  True, 'HS', 1]]
         # First layer
         self._features.append(_gen_init_conv_bn(3, 16, 2))
 
-        for config in self._layer_configs:
+        for config in self._block_layer_configs:
             self._features.append(_gen_block_layer(config))
 
         # Final layer
