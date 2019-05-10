@@ -83,6 +83,8 @@ def main():
 
     model_save_dir = './models/imagenet-{}'.format(
         datetime.now().strftime('%Y%m%d-%H%M%S'))
+    if not os.path.exists(model_save_dir):
+        os.makedirs(model_save_dir)
 
     log_name = os.path.join(model_save_dir, 'log.log')
 
