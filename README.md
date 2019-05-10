@@ -1,4 +1,4 @@
-# MobileNetV3 unofficial PyTorch implementation
+# MobileNetV3 PyTorch implementation
 This is an unofficial implementation of [MobileNetV3](https://arxiv.org/pdf/1905.02244.pdf) in PyTorch. Currently this repo contains the small and large versions of MobileNetV3, but I plan to also implement detection and segmentation extensions.
 
 ## How to use the models:
@@ -9,10 +9,10 @@ from net.mobilenetv3 import MobileNetV3Large, MobileNetV3Small
 model_large = MobileNetV3Large(n_classes=1000) # Or use small
 ```
 
-## Train on CIFAR10 [WIP]
+## Train on CIFAR10
 The script `train_cifar10.py` pulls the CIFAR10 dataset using [torchvision datasets](https://pytorch.org/docs/stable/torchvision/datasets.html) and trains a MobileNetV3 on it. Note that the dimension was upsampled to 224x224 in order to match the dimensions.
 
-To run the training, you can simply execute:
+You can start the training by simply executing:
 ```
 python train_cifar10.py
 ```
