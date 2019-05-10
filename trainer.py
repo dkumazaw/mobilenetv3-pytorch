@@ -8,7 +8,8 @@ import utils
 
 class Trainer:
     def __init__(self, model, criterion, optimizer, scheduler,
-                 device, train_loader, valid_loader, epochs, logger, model_save_dir):
+                 device, train_loader, valid_loader, test_loader,
+                 epochs, logger, model_save_dir):
         self.model = model
         self.criterion = criterion
         self.optimizer = optimizer
@@ -16,6 +17,7 @@ class Trainer:
         self.device = device
         self.train_loader = train_loader
         self.valid_loader = valid_loader
+        self.test_loader = test_loader
         self.model_save_dir = model_save_dir
         self.logger = logger
         self.epochs = epochs
@@ -80,15 +82,20 @@ class Trainer:
 
         return top1_acc.average, top5_acc.average, total_loss.average
 
-    def _valid_epoch(self, epoch):
-        """Runs validation"""
+    def _valid_epoch(self, epoch, phase='valid'):
+        """Runs validation phase on either the validation or test set"""
         total_loss = utils.AveTracker()
         top1_acc = utils.AveTracker()
         top5_acc = utils.AveTracker()
         self.model.eval()
 
+        if phase == 'test':
+            self.logger.info('Running test set inference...')
+
+        loader = self.valid_loader if phase == 'valid' else self.test_loader
+
         with torch.no_grad():
-            for step, (x, y) in enumerate(self.valid_loader):
+            for step, (x, y) in enumerate(loader):
                 x, y = x.to(self.device), y.to(self.device)
 
                 logits = self.model(x)
@@ -101,7 +108,15 @@ class Trainer:
                 top5_acc.update(prec5.item(), n)
 
                 if step % 100 == 0:
-                    self.logger.info('valid %d %e %f %f', step,
-                                     total_loss.average, top1_acc.average, top5_acc.average)
+                    self.logger.info('{} {:04d} {:e} {:f} {:f}'.format(
+                        phase, step, total_loss.average, top1_acc.average, top5_acc.average)
+                    )
 
         return top1_acc.average, top5_acc.average, total_loss.average
+
+    def validate(self):
+        """Runs inference on test set to get the final performance metrics"""
+        test_top1_acc, test_top5_acc, _ = self._valid_epoch(
+            epoch=-1, phase='test')
+        self.logger.info('test_top1_acc {:.5f}, test_top5_acc {:.5f}'.format(
+            test_top1_acc, test_top5_acc))
