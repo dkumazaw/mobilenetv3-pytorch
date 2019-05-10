@@ -1,17 +1,14 @@
 # Inspired by https://github.com/victoresque/pytorch-template/
-import logging
 import sys
 
 import torch
 
 import utils
 
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-
 
 class Trainer:
     def __init__(self, model, criterion, optimizer,
-                 device, train_loader, valid_loader, epochs, model_save_dir='./models/cifar'):
+                 device, train_loader, valid_loader, epochs, logger, model_save_dir):
         self.model = model
         self.criterion = criterion
         self.optimizer = optimizer
@@ -19,6 +16,7 @@ class Trainer:
         self.train_loader = train_loader
         self.valid_loader = valid_loader
         self.model_save_dir = model_save_dir
+        self.logger = logger
         self.epochs = epochs
 
         self.model = self.model.to(device)
@@ -27,19 +25,19 @@ class Trainer:
         """Trains the model for epochs"""
 
         for epoch in range(self.epochs):
-            logging.info('epoch %d', epoch)
+            self.logger.info('epoch %d', epoch)
             best_valid_loss = float('inf')
 
             # Training
             train_top1_acc, train_top5_acc, train_loss = self._train_epoch(
                 epoch)
-            logging.info('train_top1_acc {:.5f}, train_top5_acc {:.5f}, train_loss {:.5f}'.format(
+            self.logger.info('train_top1_acc {:.5f}, train_top5_acc {:.5f}, train_loss {:.5f}'.format(
                 train_top1_acc, train_top5_acc, train_loss))
 
             # Validation
             valid_top1_acc, valid_top5_acc, valid_loss = self._valid_epoch(
                 epoch)
-            logging.info('valid_top1_acc {:.5f}, valid_top5_acc {:.5f}, valid_loss {:.5f}'.format(
+            self.logger.info('valid_top1_acc {:.5f}, valid_top5_acc {:.5f}, valid_loss {:.5f}'.format(
                 valid_top1_acc, valid_top5_acc, valid_loss))
 
             if valid_loss < best_valid_loss:
@@ -74,8 +72,8 @@ class Trainer:
             top5_acc.update(prec5.item(), n)
 
             if step % 100 == 0:
-                logging.info('train %d %e %f %f', step,
-                             total_loss.average, top1_acc.average, top5_acc.average)
+                self.logger.info('train %d %e %f %f', step,
+                                 total_loss.average, top1_acc.average, top5_acc.average)
 
         return top1_acc.average, top5_acc.average, total_loss.average
 
@@ -100,7 +98,7 @@ class Trainer:
                 top5_acc.update(prec5.item(), n)
 
                 if step % 100 == 0:
-                    logging.info('valid %d %e %f %f', step,
-                                 total_loss.average, top1_acc.average, top5_acc.average)
+                    self.logger.info('valid %d %e %f %f', step,
+                                     total_loss.average, top1_acc.average, top5_acc.average)
 
         return top1_acc.average, top5_acc.average, total_loss.average
