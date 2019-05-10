@@ -61,7 +61,7 @@ def main():
     transform_train = transforms.Compose([
         transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
         transforms.RandomRotation(3),
-        transforms.RandomVerticalFlip(),
+        transforms.RandomHorizontalFlip(),
         transforms.ColorJitter(brightness=0.3,
                                contrast=0.3,
                                saturation=0.3,
@@ -72,6 +72,7 @@ def main():
     ])
 
     transform_valid = transforms.Compose([
+        transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalizer
     ])
