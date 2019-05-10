@@ -7,11 +7,12 @@ import utils
 
 
 class Trainer:
-    def __init__(self, model, criterion, optimizer,
+    def __init__(self, model, criterion, optimizer, scheduler,
                  device, train_loader, valid_loader, epochs, logger, model_save_dir):
         self.model = model
         self.criterion = criterion
         self.optimizer = optimizer
+        self.scheduler = scheduler
         self.device = device
         self.train_loader = train_loader
         self.valid_loader = valid_loader
@@ -39,6 +40,8 @@ class Trainer:
                 epoch)
             self.logger.info('valid_top1_acc {:.5f}, valid_top5_acc {:.5f}, valid_loss {:.5f}'.format(
                 valid_top1_acc, valid_top5_acc, valid_loss))
+
+            self.scheduler.step()
 
             if valid_loss < best_valid_loss:
                 best_valid_loss = valid_loss
