@@ -1,6 +1,12 @@
 # MobileNetV3 PyTorch implementation
 This is an unofficial implementation of [MobileNetV3](https://arxiv.org/pdf/1905.02244.pdf) in PyTorch. Currently this repo contains the small and large versions of MobileNetV3, but I plan to also implement detection and segmentation extensions.
 
+## How this repo is organized
+- `net/` folder contains model definitions
+- `data/` folder is used when running training code
+- `models/` will store checkpoints & training log
+- `train_*.py` runs training
+
 ## How to use the models:
 Models are found under `net` folder. You can load models as follows:
 ```python
