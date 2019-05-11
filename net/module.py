@@ -38,17 +38,17 @@ class SqueezeAndExcite(nn.Module):
 
 
 class SepConv2d(nn.Module):
-    def __init__(self, in_dim: int, out_dim: int):
+    def __init__(self, in_channels: int, out_channels: int):
         self._layers = nn.Sequential(
-            nn.Conv2d(in_dim, in_dim, kernel_size=3, padding=1, groups=in_dim),
-            nn.Conv2d(in_dim, out_dim, kernel_size=3)
+            nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1, groups=in_channels),
+            nn.Conv2d(in_channels, out_channels, kernel_size=3)
         )
 
     def forward(self, x):
         return self._layers(x)
 
 class Block(nn.Module):
-    def __init__(self, in_dim: int, out_dim: int, hidden_dim: int, kernel_size: int, stride: int, nl: str, se: bool):
+    def __init__(self, in_channels: int, out_channels: int, hidden_channels: int, kernel_size: int, stride: int, nl: str, se: bool):
         super(Block, self).__init__()
 
         if nl == 'HS':
@@ -58,30 +58,30 @@ class Block(nn.Module):
         else:
             raise ValueError('Non-linearity must be either HS or RE.')
 
-        self._will_skipconnect = stride == 1 and in_dim == out_dim
+        self._will_skipconnect = stride == 1 and in_channels == out_channels
 
         layers_list = [
             # 1x1 w/o activation
-            nn.Conv2d(in_dim, hidden_dim, kernel_size=1, bias=False),
-            nn.BatchNorm2d(hidden_dim),
+            nn.Conv2d(in_channels, hidden_channels, kernel_size=1, bias=False),
+            nn.BatchNorm2d(hidden_channels),
 
             # kernel_size x kernel_size depthwise w/ activation
-            nn.Conv2d(hidden_dim, hidden_dim, kernel_size=kernel_size, stride=stride,
-                        padding=kernel_size//2, groups=hidden_dim, bias=False),
+            nn.Conv2d(hidden_channels, hidden_channels, kernel_size=kernel_size, stride=stride,
+                        padding=kernel_size//2, groups=hidden_channels, bias=False),
         ]
 
         if se:
             layers_list.append(
-                SqueezeAndExcite(hidden_dim) # Squeeze and excite
+                SqueezeAndExcite(hidden_channels) # Squeeze and excite
             )
         
         layers_list.append(
-            nn.BatchNorm2d(hidden_dim),
+            nn.BatchNorm2d(hidden_channels),
             self._non_linearity(),
             
             # 1x1 w/ activation
-            nn.Conv2d(hidden_dim, out_dim, kernel_size=1, bias=False),
-            nn.BatchNorm2d(out_dim),
+            nn.Conv2d(hidden_channels, out_channels, kernel_size=1, bias=False),
+            nn.BatchNorm2d(out_channels),
             self._non_linearity()
         )
 

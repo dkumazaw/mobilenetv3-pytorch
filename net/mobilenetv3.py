@@ -2,48 +2,48 @@ from torch import nn
 from .module import *
 
 
-def _gen_init_conv_bn(in_dim: int, out_dim: int, stride: int):
+def _gen_init_conv_bn(in_channels: int, out_channels: int, stride: int):
     return nn.Sequential(
-        nn.Conv2d(in_dim, out_dim, 3, stride, 1, bias=False),
-        nn.BatchNorm2d(out_dim),
+        nn.Conv2d(in_channels, out_channels, 3, stride, 1, bias=False),
+        nn.BatchNorm2d(out_channels),
         HardSwish()
     )
 
 
 def _gen_block_layer(config: list):
-    kernel_size, hidden_dim, in_dim, out_dim, se, nl, stride = config
-    return Block(in_dim, out_dim, hidden_dim, kernel_size, stride, nl, se)
+    kernel_size, hidden_channels, in_channels, out_channels, se, nl, stride = config
+    return Block(in_channels, out_channels, hidden_channels, kernel_size, stride, nl, se)
 
 
-def _gen_final_layer_no_bn(in_dim: int, hidden_dim: int, out_dim: int):
+def _gen_final_layer_no_bn(in_channels: int, hidden_channels: int, out_channels: int):
     return nn.Sequential(
-        nn.Conv2d(in_dim, hidden_dim, 1, bias=False),
-        nn.BatchNorm2d(hidden_dim),
+        nn.Conv2d(in_channels, hidden_channels, 1, bias=False),
+        nn.BatchNorm2d(hidden_channels),
         HardSwish(),
         nn.AvgPool2d(7),
         HardSwish(),
-        nn.Conv2d(hidden_dim, out_dim, 1, bias=False),
+        nn.Conv2d(hidden_channels, out_channels, 1, bias=False),
         HardSwish()
     )
 
 
-def _gen_final_layer_bn(in_dim: int, hidden_dim: int, out_dim: int):
+def _gen_final_layer_bn(in_channels: int, hidden_channels: int, out_channels: int):
     return nn.Sequential(
-        nn.Conv2d(in_dim, hidden_dim, 1, bias=False),
-        nn.BatchNorm2d(hidden_dim),
+        nn.Conv2d(in_channels, hidden_channels, 1, bias=False),
+        nn.BatchNorm2d(hidden_channels),
         HardSwish(),
         nn.AvgPool2d(7),
         HardSwish(),
-        nn.Conv2d(hidden_dim, out_dim, 1, bias=False),
-        nn.BatchNorm2d(out_dim),
+        nn.Conv2d(hidden_channels, out_channels, 1, bias=False),
+        nn.BatchNorm2d(out_channels),
         HardSwish()
     )
 
 
-def _gen_classifier(in_dim: int, out_dim: int):
+def _gen_classifier(in_channels: int, out_channels: int):
     return nn.Sequential(
         nn.Dropout(p=0.2, inplace=True),
-        nn.Conv2d(in_dim, out_dim, 1, bias=False)
+        nn.Conv2d(in_channels, out_channels, 1, bias=False)
     )
 
 
@@ -52,7 +52,7 @@ class MobileNetV3Large(nn.Module):
         super(MobileNetV3Large, self).__init__()
         self._features = []
 
-        # [kernel_size, hidden_dim(exp size), in_dim, out_dim(#out), SE, NL, s]
+        # [kernel_size, hidden_channels(exp size), in_channels, out_channels(#out), SE, NL, s]
         self._block_layer_configs = [[3,   16,  16,  16, False, 'RE', 1],
                                      [3,   64,  16,  24, False, 'RE', 2],
                                      [3,   72,  24,  24, False, 'RE', 1],
@@ -95,7 +95,7 @@ class MobileNetV3Small(nn.Module):
         super(MobileNetV3Small, self).__init__()
         self._features = []
 
-        # [kernel_size, hidden_dim(exp size), in_dim, out_dim(#out), SE, NL, s]
+        # [kernel_size, hidden_channels(exp size), in_channels, out_channels(#out), SE, NL, s]
         self._block_layer_configs = [[3,  16,   16,  16,  True, 'RE', 2],
                                      [3,  72,   16,  24, False, 'RE', 2],
                                      [3,  88,   24,  24, False, 'RE', 1],
