@@ -13,7 +13,7 @@ class MultiBoxLayer(nn.Module):
     def forward(self, hs: list):
         '''
         Args:
-            hs: (list) of intermediate layer outputs
+            hs: (list) of (tensor)s that are intermediate layer outputs
 
         Returns:
             loc_preds: (tensor) predicted locations, shaped [n, _, 4]
