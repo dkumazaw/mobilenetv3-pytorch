@@ -50,6 +50,16 @@ class SepConv2d(nn.Module):
 class Block(nn.Module):
     def __init__(self, in_channels: int, out_channels: int, hidden_channels: int, 
                  kernel_size: int=3, stride: int=2, nl: str='RE', se: bool=False):
+        '''
+        Args:
+            in_channels:     (int) # of channels of input tensor
+            out_channels:    (int) # of channels of output tensor
+            hidden_channels: (int) # of channels of intermediate tensor after expansion layer
+            kernel_size:     (int) kernel size in conv operation
+            stride:          (int) stride in conv operation
+            nl:              (str) non linearity, either 'RE' for ReLU or 'HS' for hard swish
+            se:              (bool) True if apply squeeze and excitation
+        '''
         super(Block, self).__init__()
 
         if nl == 'HS':
@@ -62,7 +72,7 @@ class Block(nn.Module):
         self._will_skipconnect = stride == 1 and in_channels == out_channels
 
         layers_list = [
-            # 1x1 w/o activation
+            # expansion layer: 1x1 w/o activation
             nn.Conv2d(in_channels, hidden_channels, kernel_size=1, bias=False),
             nn.BatchNorm2d(hidden_channels),
 
