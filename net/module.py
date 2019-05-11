@@ -37,6 +37,16 @@ class SqueezeAndExcite(nn.Module):
         return x * y
 
 
+class SepConv2d(nn.Module):
+    def __init__(self, in_dim: int, out_dim: int):
+        self._layers = nn.Sequential(
+            nn.Conv2d(in_dim, in_dim, kernel_size=3, padding=1, groups=in_dim),
+            nn.Conv2d(in_dim, out_dim, kernel_size=3)
+        )
+
+    def forward(self, x):
+        return self._layers(x)
+
 class Block(nn.Module):
     def __init__(self, in_dim: int, out_dim: int, hidden_dim: int, kernel_size: int, stride: int, nl: str, se: bool):
         super(Block, self).__init__()
