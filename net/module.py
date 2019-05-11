@@ -48,7 +48,8 @@ class SepConv2d(nn.Module):
         return self._layers(x)
 
 class Block(nn.Module):
-    def __init__(self, in_channels: int, out_channels: int, hidden_channels: int, kernel_size: int, stride: int, nl: str, se: bool):
+    def __init__(self, in_channels: int, out_channels: int, hidden_channels: int, 
+                 kernel_size: int=3, stride: int=2, nl: str='RE', se: bool=False):
         super(Block, self).__init__()
 
         if nl == 'HS':
