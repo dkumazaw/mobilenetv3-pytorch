@@ -18,16 +18,21 @@ class SSDLite(nn.Module):
             Block(in_channels=256,  out_channels=256, hidden_channels=int(256 * 0.5)),
             Block(in_channels=256,  out_channels=64,  hidden_channels=int(256 * 0.25))
         ])
-        self.regression_headers = nn.ModuleList([
-            SepConv2d(in_channels)
+        self.regression_heads = nn.ModuleList([
+            SepConv2d(in_channels=, out_channels=6 * 4, ),
             SepConv2d(in_channels=1280, out_channels=6 * 4),
-            SepConv2d(in_channels=512, out_channels=6 * 4),
-            SepConv2d(in_channels=256, out_channels=6 * 4),
-            SepConv2d(in_channels=256, out_channels=6 * 4),
+            SepConv2d(in_channels=512,  out_channels=6 * 4),
+            SepConv2d(in_channels=256,  out_channels=6 * 4),
+            SepConv2d(in_channels=256,  out_channels=6 * 4),
             Conv2d(in_channels=64, out_channels=6 * 4, kernel_size=1),
         ])
         self.regression_heads = nn.ModuleList([
-            SepConv2d(in_channels=)
+            SepConv2d(in_channels= , out_channels=6 * n_classes),
+            SepConv2d(in_channels=1280, out_channels=6 * n_classes),
+            SepConv2d(in_channels=512,  out_channels=6 * n_classes),
+            SepConv2d(in_channels=256,  out_channels=6 * n_classes),
+            SepConv2d(in_channels=256,  out_channels=6 * n_classes),
+            Conv2d(in_channels=64, out_channels=6 * n_classes, kernel_size=1)
         ])
 
     
