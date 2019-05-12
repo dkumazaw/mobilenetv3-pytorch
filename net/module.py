@@ -49,16 +49,17 @@ class SepConv2d(nn.Module):
 
 class Block(nn.Module):
     def __init__(self, in_channels: int, out_channels: int, hidden_channels: int, 
-                 kernel_size: int=3, stride: int=2, nl: str='RE', se: bool=False):
+                 kernel_size: int=3, stride: int=2, nl: str='RE', se: bool=False, return_interim: bool=False):
         '''
         Args:
-            in_channels:     (int) # of channels of input tensor
-            out_channels:    (int) # of channels of output tensor
-            hidden_channels: (int) # of channels of intermediate tensor after expansion layer
-            kernel_size:     (int) kernel size in conv operation
-            stride:          (int) stride in conv operation
-            nl:              (str) non linearity, either 'RE' for ReLU or 'HS' for hard swish
+            in_channels:     (int)  # of channels of input tensor
+            out_channels:    (int)  # of channels of output tensor
+            hidden_channels: (int)  # of channels of intermediate tensor after expansion layer
+            kernel_size:     (int)  kernel size in conv operation
+            stride:          (int)  stride in conv operation
+            nl:              (str)  non linearity, either 'RE' for ReLU or 'HS' for hard swish
             se:              (bool) True if apply squeeze and excitation
+            return_interim   (bool) True if want to return the intermediate tensor of the expansion layer for SSDLite
         '''
         super(Block, self).__init__()
 
@@ -69,24 +70,28 @@ class Block(nn.Module):
         else:
             raise ValueError('Non-linearity must be either HS or RE.')
 
+        self._return_interim = return_interim
+
         self._will_skipconnect = stride == 1 and in_channels == out_channels
 
-        layers_list = [
+        self._expand = nn.Sequential(
             # expansion layer: 1x1 w/o activation
             nn.Conv2d(in_channels, hidden_channels, kernel_size=1, bias=False),
             nn.BatchNorm2d(hidden_channels),
+        )
 
+        conv_and_reduce_list = [
             # kernel_size x kernel_size depthwise w/ activation
             nn.Conv2d(hidden_channels, hidden_channels, kernel_size=kernel_size, stride=stride,
                         padding=kernel_size//2, groups=hidden_channels, bias=False),
         ]
 
         if se:
-            layers_list.append(
+            conv_and_reduce_list.append(
                 SqueezeAndExcite(hidden_channels) # Squeeze and excite
             )
         
-        layers_list.append(
+        conv_and_reduce_list.append(
             nn.BatchNorm2d(hidden_channels),
             self._non_linearity(),
             
@@ -96,11 +101,16 @@ class Block(nn.Module):
             self._non_linearity()
         )
 
-        self._layers = nn.Sequential(*layers_list)
+        self._conv_and_reduce = nn.Sequential(*conv_and_reduce_list)
 
     def forward(self, x):
-        out = self._layers(x)
+        h = self._expand(x)
+        out = self._layers(h)
         if self._will_skipconnect:
-            return out + x
+            out = out + x
+        
+
+        if self._return_interim:
+            return out, h
         else:
             return out
