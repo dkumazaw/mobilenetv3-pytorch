@@ -2,12 +2,14 @@
 import torch
 from torch import nn
 
+from .module import SepConv2d
+
 
 class MultiBoxLayer(nn.Module):
     def __init__(self, n_classes: int):
         super(MultiBoxLayer, self).__init__()
 
-        self.n_classes
+        self.n_classes = n_classes
 
         self.regression_heads = nn.ModuleList([
             SepConv2d(in_channels=672, out_channels=6 * 4),
