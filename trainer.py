@@ -128,6 +128,12 @@ class Trainer:
 
     def validate(self):
         """Runs inference on test set to get the final performance metrics"""
+        # Load the best performing model first
+        self._model.load_state_dict(
+            torch.load(
+                utils.load_best_model_state_dict(self.model_save_dir)
+            )
+        )
         test_top1_acc, test_top5_acc, _ = self._valid_epoch(
             epoch=-1,
             phase='test',
