@@ -6,7 +6,7 @@ import torch
 import utils
 
 
-class Trainer:
+class BaseTrainer:
     def __init__(self, model, criterion, optimizer, scheduler,
                  device, train_loader, valid_loader, test_loader,
                  epochs, logger, model_save_dir):
@@ -23,6 +23,29 @@ class Trainer:
         self.epochs = epochs
 
         self.model = self.model.to(device)
+
+    @abstractmethod
+    def train(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def _train_epoch(self, epoch: int):
+        raise NotImplementedError
+
+    @abstractmethod
+    def _valid_epoch(self, epoch: int):
+        raise NotImplementedError
+
+
+class ClassifierTrainer(BaseTrainer):
+    def __init__(self, model, criterion, optimizer, scheduler,
+                 device, train_loader, valid_loader, test_loader,
+                 epochs, logger, model_save_dir):
+        super(ClassifierTrainer, self).__init__(
+            model, criterion, optimizer, scheduler,
+            device, train_loader, valid_loader, test_loader,
+            epochs, logger, model_save_dir
+        )
 
     def train(self):
         """Trains the model for epochs"""
@@ -129,7 +152,7 @@ class Trainer:
     def validate(self):
         """Runs inference on test set to get the final performance metrics"""
         # Load the best performing model first
-        self._model.load_state_dict(
+        self.model.load_state_dict(
             torch.load(
                 utils.load_best_model_state_dict(self.model_save_dir)
             )
@@ -144,3 +167,23 @@ class Trainer:
                 test_top5_acc
             )
         )
+
+
+class ObjectDetectorTrainer(BaseTrainer):
+    def __init__(self, model, criterion, optimizer, scheduler,
+                 device, train_loader, valid_loader, test_loader,
+                 epochs, logger, model_save_dir):
+        super(ObjectDetectorTrainer, self).__init__(
+            model, criterion, optimizer, scheduler,
+            device, train_loader, valid_loader, test_loader,
+            epochs, logger, model_save_dir
+        )
+
+    def train(self):
+        pass
+
+    def _train_epoch(self, epoch):
+        pass
+
+    def _valid_epoch(self, epoch):
+        pass
