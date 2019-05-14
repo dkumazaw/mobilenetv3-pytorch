@@ -46,7 +46,7 @@ def save_checkpoint(state_dict, is_best, savedir, epoch):
         shutil.copyfile(filename, best_filename)
 
 
-def get_best_model_state_dict(savedir):
+def load_best_model_state_dict(savedir):
     """Loads best model's state dict"""
     return torch.load(os.path.join(savedir, BEST_MODEL_PATH))
 
