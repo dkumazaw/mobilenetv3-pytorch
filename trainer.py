@@ -22,7 +22,7 @@ class BaseTrainer:
         self.logger = logger
         self.epochs = epochs
 
-        self.model = self.model.to(device)
+        self.model = self.model.to(device, non_blocking=True)
 
     @abstractmethod
     def train(self):
@@ -95,7 +95,8 @@ class ClassifierTrainer(BaseTrainer):
         self.model.train()
 
         for step, (x, y) in enumerate(self.train_loader):
-            x, y = x.to(self.device), y.to(self.device)
+            x = x.to(self.device, non_blocking=True)
+            y = y.to(self.device, non_blocking=True)
 
             self.optimizer.zero_grad()
             logits = self.model(x)
@@ -129,7 +130,8 @@ class ClassifierTrainer(BaseTrainer):
 
         with torch.no_grad():
             for step, (x, y) in enumerate(loader):
-                x, y = x.to(self.device), y.to(self.device)
+                x = x.to(self.device, non_blocking=True)
+                y = y.to(self.device, non_blocking=True)
 
                 logits = self.model(x)
                 loss = self.criterion(logits, y)
