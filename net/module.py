@@ -88,7 +88,7 @@ class Block(nn.Module):
                 SqueezeAndExcite(hidden_channels)  # Squeeze and excite
             )
 
-        layers_list.extend(
+        layers_list.extend([
             nn.BatchNorm2d(hidden_channels),
             self._non_linearity(),
 
@@ -97,7 +97,7 @@ class Block(nn.Module):
                       kernel_size=1, bias=False),
             nn.BatchNorm2d(out_channels),
             self._non_linearity()
-        )
+        ])
 
         self._layers = nn.Sequential(*layers_list)
 
