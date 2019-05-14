@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 
-from .module import Block, SepConv2d
+from .module import *
 from .mobilenetv3 import *
 from .multiboxlayer import MultiBoxLayer
 
@@ -37,10 +37,16 @@ class SSDLite(nn.Module):
                                      [5,  672, 160, 160,  True, 'HS', 2, False],
                                      [5,  960, 160, 160,  True, 'HS', 1, False]]
 
-        self._base_layers.append(_gen_init_conv_bn(3, 16, 2))
+        self._base_layers.append(gen_init_conv_bn(3, 16, 2))
 
         for config in self._block_layer_configs:
-            self._base_layers.append(_gen_block_layer(config))
+            self._base_layers.append(gen_block_layer(config))
+
+        self._base_layers.append(nn.Sequential(
+            nn.Conv2d(160, 960, 1, bias=False),
+            nn.BatchNorm2d(960),
+            HardSwish(),
+        ))
 
         self._extra_layers = nn.ModuleList([
             Block(in_channels=960, out_channels=512,
