@@ -13,7 +13,7 @@ from torchvision import transforms
 
 from mylogger import create_logger
 from net.mobilenetv3 import MobileNetV3Large, MobileNetV3Small
-from trainer import Trainer
+from trainer import ClassifierTrainer as Trainer
 import utils
 
 BATCH_SIZE = 240
