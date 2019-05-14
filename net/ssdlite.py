@@ -14,7 +14,7 @@ class SSDLite(nn.Module):
     Uses a MobileNetV3 passed as base_net as the backbone network.
     """
 
-    def __init__(self, base_net, n_classes, heads):
+    def __init__(self, n_classes: int):
         super(SSDLite, self).__init__()
 
         self._n_classes = n_classes
@@ -79,3 +79,4 @@ class SSDLite(nn.Module):
             hs.append(x)
 
         loc_preds, conf_preds = self._multibox_layer(hs)
+        return loc_preds, conf_preds
