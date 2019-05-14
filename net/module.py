@@ -40,16 +40,18 @@ class SqueezeAndExcite(nn.Module):
 class SepConv2d(nn.Module):
     def __init__(self, in_channels: int, out_channels: int):
         self._layers = nn.Sequential(
-            nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1, groups=in_channels),
+            nn.Conv2d(in_channels, in_channels, kernel_size=3,
+                      padding=1, groups=in_channels),
             nn.Conv2d(in_channels, out_channels, kernel_size=3)
         )
 
     def forward(self, x):
         return self._layers(x)
 
+
 class Block(nn.Module):
-    def __init__(self, in_channels: int, out_channels: int, hidden_channels: int, 
-                 kernel_size: int=3, stride: int=2, nl: str='RE', se: bool=False):
+    def __init__(self, in_channels: int, out_channels: int, hidden_channels: int,
+                 kernel_size: int = 3, stride: int = 2, nl: str = 'RE', se: bool = False):
         '''
         Args:
             in_channels:     (int) # of channels of input tensor
@@ -78,20 +80,21 @@ class Block(nn.Module):
 
             # kernel_size x kernel_size depthwise w/ activation
             nn.Conv2d(hidden_channels, hidden_channels, kernel_size=kernel_size, stride=stride,
-                        padding=kernel_size//2, groups=hidden_channels, bias=False),
+                      padding=kernel_size//2, groups=hidden_channels, bias=False),
         ]
 
         if se:
             layers_list.append(
-                SqueezeAndExcite(hidden_channels) # Squeeze and excite
+                SqueezeAndExcite(hidden_channels)  # Squeeze and excite
             )
-        
-        layers_list.append(
+
+        layers_list.extend(
             nn.BatchNorm2d(hidden_channels),
             self._non_linearity(),
-            
+
             # 1x1 w/ activation
-            nn.Conv2d(hidden_channels, out_channels, kernel_size=1, bias=False),
+            nn.Conv2d(hidden_channels, out_channels,
+                      kernel_size=1, bias=False),
             nn.BatchNorm2d(out_channels),
             self._non_linearity()
         )
