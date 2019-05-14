@@ -52,22 +52,22 @@ class MobileNetV3Large(nn.Module):
         super(MobileNetV3Large, self).__init__()
         self._features = []
 
-        # [kernel_size, hidden_channels(exp size), in_channels, out_channels(#out), SE, NL, s]
-        self._block_layer_configs = [[3,   16,  16,  16, False, 'RE', 1],
-                                     [3,   64,  16,  24, False, 'RE', 2],
-                                     [3,   72,  24,  24, False, 'RE', 1],
-                                     [5,   72,  24,  40,  True, 'RE', 2],
-                                     [5,  120,  40,  40,  True, 'RE', 1],
-                                     [5,  120,  40,  40,  True, 'RE', 1],
-                                     [3,  240,  40,  80, False, 'HS', 2],
-                                     [3,  200,  80,  80, False, 'HS', 1],
-                                     [3,  184,  80,  80, False, 'HS', 1],
-                                     [3,  184,  80,  80, False, 'HS', 1],
-                                     [3,  480,  80, 112,  True, 'HS', 1],
-                                     [3,  672, 112, 112,  True, 'HS', 1],
-                                     [5,  672, 112, 160,  True, 'HS', 1],
-                                     [5,  672, 160, 160,  True, 'HS', 2],
-                                     [5,  960, 160, 160,  True, 'HS', 1]]
+        # [kernel_size, hidden_channels(exp size), in_channels, out_channels(#out), SE, NL, s, return_intermed]
+        self._block_layer_configs = [[3,   16,  16,  16, False, 'RE', 1, False],
+                                     [3,   64,  16,  24, False, 'RE', 2, False],
+                                     [3,   72,  24,  24, False, 'RE', 1, False],
+                                     [5,   72,  24,  40,  True, 'RE', 2, False],
+                                     [5,  120,  40,  40,  True, 'RE', 1, False],
+                                     [5,  120,  40,  40,  True, 'RE', 1, False],
+                                     [3,  240,  40,  80, False, 'HS', 2, False],
+                                     [3,  200,  80,  80, False, 'HS', 1, False],
+                                     [3,  184,  80,  80, False, 'HS', 1, False],
+                                     [3,  184,  80,  80, False, 'HS', 1, False],
+                                     [3,  480,  80, 112,  True, 'HS', 1, False],
+                                     [3,  672, 112, 112,  True, 'HS', 1, False],
+                                     [5,  672, 112, 160,  True, 'HS', 1, False],
+                                     [5,  672, 160, 160,  True, 'HS', 2, False],
+                                     [5,  960, 160, 160,  True, 'HS', 1, False]]
 
         # First layer
         self._features.append(gen_init_conv_bn(3, 16, 2))
