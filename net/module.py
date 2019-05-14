@@ -50,13 +50,9 @@ class SepConv2d(nn.Module):
 
 
 class Block(nn.Module):
-<<<<<<< HEAD
-    def __init__(self, in_channels: int, out_channels: int, hidden_channels: int, 
-                 kernel_size: int=3, stride: int=2, nl: str='RE', se: bool=False, return_interim: bool=False):
-=======
     def __init__(self, in_channels: int, out_channels: int, hidden_channels: int,
-                 kernel_size: int = 3, stride: int = 2, nl: str = 'RE', se: bool = False):
->>>>>>> master
+                 kernel_size: int = 3, stride: int = 2,
+                 nl: str = 'RE', se: bool = False, return_intermed: bool = False):
         '''
         Args:
             in_channels:     (int)  # of channels of input tensor
@@ -66,7 +62,7 @@ class Block(nn.Module):
             stride:          (int)  stride in conv operation
             nl:              (str)  non linearity, either 'RE' for ReLU or 'HS' for hard swish
             se:              (bool) True if apply squeeze and excitation
-            return_interim   (bool) True if want to return the intermediate tensor of the expansion layer for SSDLite
+            return_intermed  (bool) True if want to return the intermediate tensor of the expansion layer for SSDLite
         '''
         super(Block, self).__init__()
 
@@ -77,7 +73,7 @@ class Block(nn.Module):
         else:
             raise ValueError('Non-linearity must be either HS or RE.')
 
-        self._return_interim = return_interim
+        self._return_intermed = return_intermed
 
         self._will_skipconnect = stride == 1 and in_channels == out_channels
 
@@ -87,26 +83,18 @@ class Block(nn.Module):
             nn.BatchNorm2d(hidden_channels),
         )
 
-        conv_and_reduce_list = [
+        conv_and_reduce_layers = [
             # kernel_size x kernel_size depthwise w/ activation
             nn.Conv2d(hidden_channels, hidden_channels, kernel_size=kernel_size, stride=stride,
                       padding=kernel_size//2, groups=hidden_channels, bias=False),
         ]
 
         if se:
-<<<<<<< HEAD
-            conv_and_reduce_list.append(
-                SqueezeAndExcite(hidden_channels) # Squeeze and excite
-            )
-        
-        conv_and_reduce_list.append(
-=======
-            layers_list.append(
+            conv_and_reduce_layers.append(
                 SqueezeAndExcite(hidden_channels)  # Squeeze and excite
             )
 
-        layers_list.extend([
->>>>>>> master
+        conv_and_reduce_layers.extend([
             nn.BatchNorm2d(hidden_channels),
             self._non_linearity(),
 
@@ -117,16 +105,15 @@ class Block(nn.Module):
             self._non_linearity()
         ])
 
-        self._conv_and_reduce = nn.Sequential(*conv_and_reduce_list)
+        self._conv_and_reduce = nn.Sequential(*conv_and_reduce_layers)
 
     def forward(self, x):
         h = self._expand(x)
         out = self._layers(h)
         if self._will_skipconnect:
             out = out + x
-        
 
-        if self._return_interim:
+        if self._return_intermed:
             return out, h
         else:
             return out
