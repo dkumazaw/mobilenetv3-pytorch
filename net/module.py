@@ -39,6 +39,7 @@ class SqueezeAndExcite(nn.Module):
 
 class SepConv2d(nn.Module):
     def __init__(self, in_channels: int, out_channels: int):
+        super(SepConv2d, self).__init__()
         self._layers = nn.Sequential(
             nn.Conv2d(in_channels, in_channels, kernel_size=3,
                       padding=1, groups=in_channels),
