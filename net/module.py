@@ -43,7 +43,9 @@ class SepConv2d(nn.Module):
         self._layers = nn.Sequential(
             nn.Conv2d(in_channels, in_channels, kernel_size=3,
                       padding=1, groups=in_channels),
-            nn.Conv2d(in_channels, out_channels, kernel_size=3)
+            nn.BatchNorm2d(in_channels),
+            nn.ReLU6(),
+            nn.Conv2d(in_channels, out_channels, kernel_size=1)
         )
 
     def forward(self, x):
@@ -110,7 +112,7 @@ class Block(nn.Module):
 
     def forward(self, x):
         h = self._expand(x)
-        out = self._layers(h)
+        out = self._conv_and_reduce(h)
         if self._will_skipconnect:
             out = out + x
 
