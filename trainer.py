@@ -35,14 +35,20 @@ class Trainer:
             # Training
             train_top1_acc, train_top5_acc, train_loss = self._train_epoch(
                 epoch)
-            self.logger.info('train_top1_acc {:.5f}, train_top5_acc {:.5f}, train_loss {:.5f}'.format(
-                train_top1_acc, train_top5_acc, train_loss))
+            self.logger.info(
+                'train_top1_acc {:.5f}, train_top5_acc {:.5f}, train_loss {:.5f}'.format(
+                    train_top1_acc, train_top5_acc, train_loss
+                )
+            )
 
             # Validation
             valid_top1_acc, valid_top5_acc, valid_loss = self._valid_epoch(
                 epoch)
-            self.logger.info('valid_top1_acc {:.5f}, valid_top5_acc {:.5f}, valid_loss {:.5f}'.format(
-                valid_top1_acc, valid_top5_acc, valid_loss))
+            self.logger.info(
+                'valid_top1_acc {:.5f}, valid_top5_acc {:.5f}, valid_loss {:.5f}'.format(
+                    valid_top1_acc, valid_top5_acc, valid_loss
+                )
+            )
 
             elapsed = time.time() - start_time
             self.logger.info('Took {} seconds'.format(elapsed))
@@ -112,8 +118,10 @@ class Trainer:
                 top5_acc.update(prec5.item(), n)
 
                 if step % 100 == 0:
-                    self.logger.info('{} {:04d} {:e} {:f} {:f}'.format(
-                        phase, step, total_loss.average, top1_acc.average, top5_acc.average)
+                    self.logger.info(
+                        '{} {:04d} {:e} {:f} {:f}'.format(
+                            phase, step, total_loss.average, top1_acc.average, top5_acc.average
+                        )
                     )
 
         return top1_acc.average, top5_acc.average, total_loss.average
@@ -127,6 +135,12 @@ class Trainer:
             )
         )
         test_top1_acc, test_top5_acc, _ = self._valid_epoch(
-            epoch=-1, phase='test')
-        self.logger.info('test_top1_acc {:.5f}, test_top5_acc {:.5f}'.format(
-            test_top1_acc, test_top5_acc))
+            epoch=-1,
+            phase='test',
+        )
+        self.logger.info(
+            'test_top1_acc {:.5f}, test_top5_acc {:.5f}'.format(
+                test_top1_acc,
+                test_top5_acc
+            )
+        )
