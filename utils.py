@@ -4,6 +4,8 @@ import shutil
 
 import torch
 
+BEST_MODEL_PATH = 'model_best.pt'
+
 
 class AveTracker:
     def __init__(self):
@@ -40,8 +42,13 @@ def save_checkpoint(state_dict, is_best, savedir, epoch):
     torch.save(state_dict, filename)
 
     if is_best:
-        best_filename = os.path.join(savedir, 'model_best.pt')
+        best_filename = os.path.join(savedir, BEST_MODEL_PATH)
         shutil.copyfile(filename, best_filename)
+
+
+def get_best_model_state_dict(savedir):
+    """Loads best model's state dict"""
+    return torch.load(os.path.join(savedir, BEST_MODEL_PATH))
 
 
 def count_parameters_in_millions(model):
