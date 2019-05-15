@@ -44,11 +44,14 @@ def main():
 
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = torch.optim.RMSprop(
-        model.parameters(), lr=0.1, alpha=0.9999, momentum=0.9, weight_decay=1e-5
+    optimizer = torch.optim.SGD(
+        model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-5
     )
-    scheduler = torch.optim.lr_scheduler.StepLR(
-        optimizer, step_size=3, gamma=0.01
+
+    scheduler = torch.optim.lr_scheduler.CyclicLR(
+        optimizer,
+        base_lr=0.1, max_lr=1.0,
+        step_size_up=int((len(train_sampler)/BATCH_SIZE) * (EPOCHS / 2))
     )
 
     device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
