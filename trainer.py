@@ -52,7 +52,9 @@ class ClassifierTrainer(BaseTrainer):
         best_valid_loss = float('inf')
 
         for epoch in range(self.epochs):
-            self.logger.info('epoch %d', epoch)
+            self.logger.info('epoch {}, lr {}'.format(
+                epoch, self.scheduler.get_lr()[0]
+            ))
             start_time = time.time()
 
             # Training
