@@ -78,8 +78,6 @@ class ClassifierTrainer(BaseTrainer):
             elapsed = time.time() - start_time
             self.logger.info('Took {} seconds'.format(elapsed))
 
-            self.scheduler.step()
-
             if valid_loss < best_valid_loss:
                 best_valid_loss = valid_loss
                 is_best = True
@@ -121,6 +119,8 @@ class ClassifierTrainer(BaseTrainer):
             total_loss.update(loss.item(), n)
             top1_acc.update(prec1.item(), n)
             top5_acc.update(prec5.item(), n)
+
+            self.scheduler.step()
 
             if step % 100 == 0:
                 self.logger.info('train %d %e %f %f', step,
