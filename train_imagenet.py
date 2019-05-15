@@ -16,9 +16,9 @@ from net.mobilenetv3 import MobileNetV3Large, MobileNetV3Small
 from trainer import ClassifierTrainer as Trainer
 import utils
 
-BATCH_SIZE = 240
-NUM_WORKERS = 16
-EPOCHS = 1
+BATCH_SIZE = 1760
+NUM_WORKERS = 96
+EPOCHS = 30
 
 
 def main():
@@ -46,12 +46,6 @@ def main():
 
     optimizer = torch.optim.SGD(
         model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-5
-    )
-
-    scheduler = torch.optim.lr_scheduler.CyclicLR(
-        optimizer,
-        base_lr=0.1, max_lr=1.0,
-        step_size_up=int((len(train_sampler)/BATCH_SIZE) * (EPOCHS / 2))
     )
 
     device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
@@ -99,17 +93,23 @@ def main():
 
     train_sampler = SubsetRandomSampler(train_indices)
     valid_sampler = SubsetRandomSampler(valid_indices)
+    
+    scheduler = torch.optim.lr_scheduler.CyclicLR(
+        optimizer,
+        base_lr=0.1, max_lr=1.0,
+        step_size_up=int((len(train_sampler)/BATCH_SIZE) * (EPOCHS / 2))
+    )
 
     train_loader = DataLoader(
         train_val_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=NUM_WORKERS, pin_memory=True
     )
 
     valid_loader = DataLoader(
-        train_val_dataset, batch_size=BATCH_SIZE, sampler=valid_sampler, num_workers=NUM_WORKERS
+        train_val_dataset, batch_size=BATCH_SIZE, sampler=valid_sampler, num_workers=NUM_WORKERS, pin_memory=True
     )
 
     test_loader = DataLoader(
-        test_dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS
+        test_dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, pin_memory=True
     )
 
     epochs = EPOCHS
