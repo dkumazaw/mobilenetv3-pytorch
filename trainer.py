@@ -84,8 +84,18 @@ class ClassifierTrainer(BaseTrainer):
             else:
                 is_best = False
 
-            utils.save_checkpoint(self.model.state_dict(),
-                                  is_best, self.model_save_dir, epoch)
+            # Create a checkpoint
+            state = {
+                'epoch': epoch,
+                'model': self.model.state_dict(),
+                'optimizer': self.optimizer.state_dict(),
+            }
+            utils.save_checkpoint(
+                state,
+                is_best,
+                self.model_save_dir,
+                epoch
+            )
 
     def _train_epoch(self, epoch: int):
         """Trains the model for one epoch"""
@@ -154,11 +164,14 @@ class ClassifierTrainer(BaseTrainer):
     def validate(self):
         """Runs inference on test set to get the final performance metrics"""
         # Load the best performing model first
-        self.model.load_state_dict(
-            torch.load(
-                utils.load_best_model_state_dict(self.model_save_dir)
-            )
+        best_state = torch.load(
+            utils.load_best_model_state_dict(self.model_save_dir)
         )
+        self.model.load_state_dict(
+            best_state['model']
+        )
+
+        # Run validation on test set
         test_top1_acc, test_top5_acc, _ = self._valid_epoch(
             epoch=-1,
             phase='test',
