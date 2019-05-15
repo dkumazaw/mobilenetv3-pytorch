@@ -24,17 +24,6 @@ class BaseTrainer:
 
         self.model = self.model.to(device, non_blocking=True)
 
-    @abstractmethod
-    def train(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def _train_epoch(self, epoch: int):
-        raise NotImplementedError
-
-    @abstractmethod
-    def _valid_epoch(self, epoch: int):
-        raise NotImplementedError
 
 
 class ClassifierTrainer(BaseTrainer):
@@ -52,7 +41,9 @@ class ClassifierTrainer(BaseTrainer):
         best_valid_loss = float('inf')
 
         for epoch in range(self.epochs):
-            self.logger.info('epoch %d', epoch)
+            self.logger.info('epoch {}, lr {}'.format(
+                epoch, self.scheduler.get_lr()[0]
+            ))
             start_time = time.time()
 
             # Training
@@ -75,8 +66,6 @@ class ClassifierTrainer(BaseTrainer):
 
             elapsed = time.time() - start_time
             self.logger.info('Took {} seconds'.format(elapsed))
-
-            self.scheduler.step()
 
             if valid_loss < best_valid_loss:
                 best_valid_loss = valid_loss
@@ -119,6 +108,8 @@ class ClassifierTrainer(BaseTrainer):
             total_loss.update(loss.item(), n)
             top1_acc.update(prec1.item(), n)
             top5_acc.update(prec5.item(), n)
+
+            self.scheduler.step()
 
             if step % 100 == 0:
                 self.logger.info('train %d %e %f %f', step,
@@ -164,9 +155,8 @@ class ClassifierTrainer(BaseTrainer):
     def validate(self):
         """Runs inference on test set to get the final performance metrics"""
         # Load the best performing model first
-        best_state = torch.load(
-            utils.load_best_model_state_dict(self.model_save_dir)
-        )
+        best_state = utils.load_best_model_state_dict(self.model_save_dir)
+
         self.model.load_state_dict(
             best_state['model']
         )
