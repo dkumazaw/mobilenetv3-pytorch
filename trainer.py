@@ -24,17 +24,6 @@ class BaseTrainer:
 
         self.model = self.model.to(device, non_blocking=True)
 
-    @abstractmethod
-    def train(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def _train_epoch(self, epoch: int):
-        raise NotImplementedError
-
-    @abstractmethod
-    def _valid_epoch(self, epoch: int):
-        raise NotImplementedError
 
 
 class ClassifierTrainer(BaseTrainer):
@@ -166,9 +155,8 @@ class ClassifierTrainer(BaseTrainer):
     def validate(self):
         """Runs inference on test set to get the final performance metrics"""
         # Load the best performing model first
-        best_state = torch.load(
-            utils.load_best_model_state_dict(self.model_save_dir)
-        )
+        best_state = utils.load_best_model_state_dict(self.model_save_dir)
+
         self.model.load_state_dict(
             best_state['model']
         )
