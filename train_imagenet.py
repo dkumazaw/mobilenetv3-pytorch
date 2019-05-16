@@ -17,9 +17,9 @@ from net.mobilenetv3 import MobileNetV3Large, MobileNetV3Small
 from trainer import ClassifierTrainer as Trainer
 import utils
 
-BATCH_SIZE = 1760
-NUM_WORKERS = 96
-EPOCHS = 30
+BATCH_SIZE = 240
+NUM_WORKERS = 16
+EPOCHS = 20
 
 
 def main():
@@ -46,7 +46,7 @@ def main():
     criterion = nn.CrossEntropyLoss()
 
     optimizer = torch.optim.SGD(
-        model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-5
+        model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-4, nesterov=True
     )
 
     device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
@@ -58,9 +58,9 @@ def main():
     )
 
     transform_train = transforms.Compose([
-        transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
+        transforms.RandomResizedCrop(224),
         transforms.RandomRotation(3),
-        transforms.RandomHorizontalFlip(),
+        transforms.RandomVerticalFlip(),
         transforms.ColorJitter(brightness=0.3,
                                contrast=0.3,
                                saturation=0.3,
@@ -70,44 +70,37 @@ def main():
         normalizer
     ])
 
-    transform_valid = transforms.Compose([
+    transform_test = transforms.Compose([
         transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
         normalizer
     ])
 
-    train_val_dataset = torchvision.datasets.ImageFolder(
+    train_dataset = torchvision.datasets.ImageFolder(
         './data/imagenet/train', transform=transform_train
     )
 
-    test_dataset = torchvision.datasets.ImageFolder(
-        './data/imagenet/valid', transform=transform_valid
+    valid_dataset = torchvision.datasets.ImageFolder(
+        './data/imagenet/valid', transform=transform_test
     )
 
-    # Create validation dataset
-    dataset_size = len(train_val_dataset)
-    indices = list(range(dataset_size))
-    random.shuffle(indices)
+    test_dataset = torchvision.datasets.ImageFolder(
+        './data/imagenet/test', transform=transform_test
+    )
 
-    train_indices = indices[50000:]
-    valid_indices = indices[:50000]
-
-    train_sampler = SubsetRandomSampler(train_indices)
-    valid_sampler = SubsetRandomSampler(valid_indices)
-
-    scheduler = torch.optim.lr_scheduler.CyclicLR(
+    scheduler = utils.OneCycleLR(
         optimizer,
-        base_lr=0.1, max_lr=1.0,
-        step_size_up=int((len(train_sampler)/BATCH_SIZE) * (EPOCHS / 2))
+        num_steps=int((len(train_dataset)/BATCH_SIZE) * EPOCHS),
+        lr_range=(0.1, 1.0),
     )
 
     train_loader = DataLoader(
-        train_val_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=NUM_WORKERS, pin_memory=True
+        train_dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, pin_memory=True
     )
 
     valid_loader = DataLoader(
-        train_val_dataset, batch_size=BATCH_SIZE, sampler=valid_sampler, num_workers=NUM_WORKERS, pin_memory=True
+        valid_dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, pin_memory=True
     )
 
     test_loader = DataLoader(
