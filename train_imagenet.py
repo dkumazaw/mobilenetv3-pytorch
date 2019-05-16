@@ -5,6 +5,7 @@ import random
 
 import torch
 from torch import nn
+import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 
@@ -49,6 +50,7 @@ def main():
     )
 
     device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
+    cudnn.benchmark = True
 
     normalizer = transforms.Normalize(
         mean=[0.485, 0.456, 0.406],
@@ -93,7 +95,7 @@ def main():
 
     train_sampler = SubsetRandomSampler(train_indices)
     valid_sampler = SubsetRandomSampler(valid_indices)
-    
+
     scheduler = torch.optim.lr_scheduler.CyclicLR(
         optimizer,
         base_lr=0.1, max_lr=1.0,
