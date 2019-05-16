@@ -17,7 +17,7 @@ from net.mobilenetv3 import MobileNetV3Large, MobileNetV3Small
 from trainer import ClassifierTrainer as Trainer
 import utils
 
-BATCH_SIZE = 240
+BATCH_SIZE = 245
 NUM_WORKERS = 16
 EPOCHS = 20
 
@@ -46,7 +46,7 @@ def main():
     criterion = nn.CrossEntropyLoss()
 
     optimizer = torch.optim.SGD(
-        model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-4, nesterov=True
+        model.parameters(), lr=0.1, momentum=0.9, weight_decay=1e-5
     )
 
     device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
@@ -92,11 +92,11 @@ def main():
     scheduler = utils.OneCycleLR(
         optimizer,
         num_steps=int((len(train_dataset)/BATCH_SIZE) * EPOCHS),
-        lr_range=(0.1, 1.0),
+        lr_range=(0.2, 0.8),
     )
 
     train_loader = DataLoader(
-        train_dataset, batch_size=BATCH_SIZE, num_workers=NUM_WORKERS, pin_memory=True
+        train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS, pin_memory=True
     )
 
     valid_loader = DataLoader(
