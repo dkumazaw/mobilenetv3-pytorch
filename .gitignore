@@ -1,4 +1,9 @@
+.ipynb_checkpoints/
 .vscode/
 data/*
 models/*
 __pycache__/
+
+*.onnx
+*.pb
+*.pth

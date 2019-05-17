@@ -95,18 +95,18 @@ class MobileNetV3Small(nn.Module):
         super(MobileNetV3Small, self).__init__()
         self._features = []
 
-        # [kernel_size, hidden_channels(exp size), in_channels, out_channels(#out), SE, NL, s]
-        self._block_layer_configs = [[3,  16,   16,  16,  True, 'RE', 2],
-                                     [3,  72,   16,  24, False, 'RE', 2],
-                                     [3,  88,   24,  24, False, 'RE', 1],
-                                     [5,  96,   24,  40,  True, 'HS', 1],
-                                     [5, 240,   40,  40,  True, 'HS', 1],
-                                     [5, 240,   40,  40,  True, 'HS', 1],
-                                     [5, 120,   40,  48,  True, 'HS', 1],
-                                     [5, 144,   48,  48,  True, 'HS', 1],
-                                     [5, 288,   48,  96,  True, 'HS', 2],
-                                     [5, 576,   96,  96,  True, 'HS', 1],
-                                     [5, 576,   96,  96,  True, 'HS', 1]]
+        # [kernel_size, hidden_channels(exp size), in_channels, out_channels(#out), SE, NL, s, return_intermed]
+        self._block_layer_configs = [[3,  16,   16,  16,  True, 'RE', 2, False],
+                                     [3,  72,   16,  24, False, 'RE', 2, False],
+                                     [3,  88,   24,  24, False, 'RE', 1, False],
+                                     [5,  96,   24,  40,  True, 'HS', 1, False],
+                                     [5, 240,   40,  40,  True, 'HS', 1, False],
+                                     [5, 240,   40,  40,  True, 'HS', 1, False],
+                                     [5, 120,   40,  48,  True, 'HS', 1, False],
+                                     [5, 144,   48,  48,  True, 'HS', 1, False],
+                                     [5, 288,   48,  96,  True, 'HS', 2, False],
+                                     [5, 576,   96,  96,  True, 'HS', 1, False],
+                                     [5, 576,   96,  96,  True, 'HS', 1, False]]
         # First layer
         self._features.append(gen_init_conv_bn(3, 16, 2))
 

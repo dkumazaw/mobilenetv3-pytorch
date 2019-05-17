@@ -25,7 +25,6 @@ class BaseTrainer:
         self.model = self.model.to(device, non_blocking=True)
 
 
-
 class ClassifierTrainer(BaseTrainer):
     def __init__(self, model, criterion, optimizer, scheduler,
                  device, train_loader, valid_loader, test_loader,
@@ -42,7 +41,7 @@ class ClassifierTrainer(BaseTrainer):
 
         for epoch in range(self.epochs):
             self.logger.info('epoch {}, lr {}'.format(
-                epoch, self.scheduler.get_lr()[0]
+                epoch, self.scheduler.get_lr()
             ))
             start_time = time.time()
 
