@@ -15,7 +15,7 @@ def gen_block_layer(config: list):
     return Block(in_channels, out_channels, hidden_channels, kernel_size, stride, nl, se, return_intermed)
 
 
-def gen_final_layer_no_bn(in_channels: int, hidden_channels: int, out_channels: int):
+def gen_final_layer(in_channels: int, hidden_channels: int, out_channels: int):
     return nn.Sequential(
         nn.Conv2d(in_channels, hidden_channels, 1, bias=False),
         nn.BatchNorm2d(hidden_channels),
@@ -23,19 +23,6 @@ def gen_final_layer_no_bn(in_channels: int, hidden_channels: int, out_channels: 
         nn.AvgPool2d(7),
         HardSwish(),
         nn.Conv2d(hidden_channels, out_channels, 1, bias=False),
-        HardSwish()
-    )
-
-
-def gen_final_layer_bn(in_channels: int, hidden_channels: int, out_channels: int):
-    return nn.Sequential(
-        nn.Conv2d(in_channels, hidden_channels, 1, bias=False),
-        nn.BatchNorm2d(hidden_channels),
-        HardSwish(),
-        nn.AvgPool2d(7),
-        HardSwish(),
-        nn.Conv2d(hidden_channels, out_channels, 1, bias=False),
-        nn.BatchNorm2d(out_channels),
         HardSwish()
     )
 
@@ -76,7 +63,7 @@ class MobileNetV3Large(nn.Module):
             self._features.append(gen_block_layer(config))
 
         # Final layer
-        self._features.append(gen_final_layer_no_bn(160, 960, 1280))
+        self._features.append(gen_final_layer(160, 960, 1280))
 
         self._features = nn.Sequential(*self._features)
 
@@ -99,7 +86,7 @@ class MobileNetV3Small(nn.Module):
         self._block_layer_configs = [[3,  16,   16,  16,  True, 'RE', 2, False],
                                      [3,  72,   16,  24, False, 'RE', 2, False],
                                      [3,  88,   24,  24, False, 'RE', 1, False],
-                                     [5,  96,   24,  40,  True, 'HS', 1, False],
+                                     [5,  96,   24,  40,  True, 'HS', 2, False],
                                      [5, 240,   40,  40,  True, 'HS', 1, False],
                                      [5, 240,   40,  40,  True, 'HS', 1, False],
                                      [5, 120,   40,  48,  True, 'HS', 1, False],
@@ -114,7 +101,7 @@ class MobileNetV3Small(nn.Module):
             self._features.append(gen_block_layer(config))
 
         # Final layer
-        self._features.append(gen_final_layer_bn(96, 576, 1280))
+        self._features.append(gen_final_layer(96, 576, 1280))
 
         self._features = nn.Sequential(*self._features)
 
